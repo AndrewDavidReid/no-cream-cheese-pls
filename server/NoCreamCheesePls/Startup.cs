@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +9,15 @@ namespace NoCreamCheesePls
 {
   public class Startup
   {
-    public Startup(IConfiguration configuration)
+    public Startup(IConfiguration configuration,
+                   IHostingEnvironment hostingEnvironment)
     {
-      Configuration = configuration;
+      m_Configuration = configuration;
+      m_HostingEnvironment= hostingEnvironment;
     }
 
-    public IConfiguration Configuration { get; }
+    private readonly IConfiguration m_Configuration;
+    private readonly IHostingEnvironment m_HostingEnvironment;
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -22,9 +26,9 @@ namespace NoCreamCheesePls
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    public void Configure(IApplicationBuilder app)
     {
-      if (env.IsDevelopment())
+      if (m_HostingEnvironment.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();
       }
