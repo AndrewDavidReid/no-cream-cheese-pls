@@ -1,8 +1,15 @@
 version: '3.4'
 
 services:
-  nocreamcheesepls:
-    image: ${DOCKER_REGISTRY}nocreamcheesepls
+  web:
+    image: no-cream-cheese-pls
     build:
       context: .
       dockerfile: NoCreamCheesePls/Dockerfile
+ # migrations:
+    #image: no-cream-cheese-pls-migrations
+    #build:
+     # context: .
+     # args:
+    #    - MIGRATIONS_PROJECT=NoCreamCheesePls.Data.Migrations
+     # dockerfile: NoCreamCheesePls.Data.Migrations/Dockerfile

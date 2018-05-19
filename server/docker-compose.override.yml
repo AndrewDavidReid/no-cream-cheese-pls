@@ -1,8 +1,15 @@
 version: '3.4'
 
 services:
-  nocreamcheesepls:
+  web:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=${NCCP_CONNECTION_STRING}
     ports:
       - "80"
+  migrations:
+    image: no-cream-cheese-pls-migrations
+    environment:
+      - CONNECTION_STRING=${NCCP_CONNECTION_STRING}
+      - DATABASE_PROVIDER=postgres
+      - DEPLOYMENT_ENVIRONMENT=Development

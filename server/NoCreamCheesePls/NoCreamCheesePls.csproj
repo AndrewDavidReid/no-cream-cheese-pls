@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NoCreamCheesePls.Data\NoCreamCheesePls.Data.csproj" />
+  </ItemGroup>
+
 </Project>
