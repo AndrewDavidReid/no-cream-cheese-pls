@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using NoCreamCheesePls.Data.Models;
-using NoCreamCheesePls.Data.Repositories.Interfaces;
+using NoCreamCheesePls.Data.Repositories;
 using NoCreamCheesePls.Data.Sql.Base;
 
 namespace NoCreamCheesePls.Data.Sql
@@ -13,7 +13,7 @@ namespace NoCreamCheesePls.Data.Sql
     public ShoppingListSqlRepository(IConfiguration configuration) : base(configuration)
     { }
 
-    public async Task<IEnumerable<ShoppingList>> GetAll()
+    public async Task<IEnumerable<ShoppingList>> GetAllShoppingListsAsync()
     {
       using (var connection = GetConnection)
       {
