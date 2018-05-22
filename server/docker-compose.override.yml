@@ -1,15 +1,18 @@
 version: '3.4'
-
 services:
   web:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Default=${NCCP_CONNECTION_STRING}
+     - ASPNETCORE_ENVIRONMENT=Development
+      - NCCP_DB_HOST=${NCCP_DB_HOST}
+      - NCCP_DB_PORT=${NCCP_DB_PORT}
+      - NCCP_DB_NAME=${NCCP_DB_NAME}
+      - NCCP_DB_USER=${NCCP_DB_USER}
+      - NCCP_DB_PASSWORD=${NCCP_DB_PASSWORD}
     ports:
       - "80"
   migrations:
     image: no-cream-cheese-pls-migrations
     environment:
-      - CONNECTION_STRING=${NCCP_CONNECTION_STRING}
+      - CONNECTION_STRING=Host=${NCCP_DB_HOST};Port=${NCCP_DB_PORT};Database=${NCCP_DB_NAME};Username=${NCCP_DB_USER};Password=${NCCP_DB_PASSWORD};
       - DATABASE_PROVIDER=postgres
       - DEPLOYMENT_ENVIRONMENT=Development
