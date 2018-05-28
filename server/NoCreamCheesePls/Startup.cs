@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NoCreamCheesePls.Bootloader;
 using NoCreamCheesePls.Business.CommandHandlers;
+using NoCreamCheesePls.Filters;
 
 namespace NoCreamCheesePls
 {
@@ -46,6 +47,7 @@ namespace NoCreamCheesePls
       app.UseMvc();
     }
 
+
     private void ConfigureDatabase()
     {
       Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -53,7 +55,11 @@ namespace NoCreamCheesePls
 
     private void ConfigureMvc(IServiceCollection servicesP)
     {
-      var mvc_configuration = servicesP.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+      var mvc_configuration = servicesP.AddMvc(x =>
+      {
+        x.Filters.Add(new ApiExceptionFilter());
+      }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
       mvc_configuration.AddJsonOptions(options =>
       {
         options.SerializerSettings.Formatting = Formatting.Indented;
