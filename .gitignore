@@ -1,3 +1,4 @@
 *.user
 .vscode
-ci/tools
+server/NoCreamCheesePls/wwwroot
+tools

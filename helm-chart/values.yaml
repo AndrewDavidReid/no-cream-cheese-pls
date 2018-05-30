@@ -1,0 +1,8 @@
+deploymentEnvironment: Development
+dbHost: x
+dbName: x
+dbPassword: x
+dbUser: postgres
+dbPort: 5432
+databaseProvider: postgres
+domain: x
