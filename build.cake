@@ -86,7 +86,7 @@ Task("Deploy to Kubernetes Cluster")
 .IsDependentOn("Push Migrations Docker Image to Registry")
 .Does(() => {
 
-  var exitCode = StartProcess("helm", new ProcessSettings {
+  var exitCode = StartProcess("/usr/local/bin/helm", new ProcessSettings {
     Arguments = $@"upgrade
     --debug
     --install
