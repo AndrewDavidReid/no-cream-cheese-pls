@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -43,7 +44,22 @@ namespace NoCreamCheesePls
         app.UseDeveloperExceptionPage();
       }
 
-      app.UseMvc();
+      app.Use(async (context, next) =>
+      {
+        await next();
+
+        if (context.Response.StatusCode == 404 && !Path.HasExtension(context.Request.Path.Value) &&
+            !context.Request.Path.Value.StartsWith("/api/"))
+        {
+          context.Request.Path = "/index.html";
+          await next();
+        }
+      });
+
+      app.UseMvcWithDefaultRoute();
+      app.UseDefaultFiles();
+      app.UseStaticFiles();
+
     }
 
     private void ConfigureDatabase()

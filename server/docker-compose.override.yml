@@ -2,7 +2,7 @@ version: '3.4'
 services:
   web:
     environment:
-     - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Development
       - NCCP_DB_HOST=${NCCP_DB_HOST}
       - NCCP_DB_PORT=${NCCP_DB_PORT}
       - NCCP_DB_NAME=${NCCP_DB_NAME}
