@@ -1,2 +1,5 @@
 *.user
 *.code-workspace
+.vscode
+server/NoCreamCheesePls/wwwroot
+tools
