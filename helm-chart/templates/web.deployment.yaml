@@ -28,8 +28,14 @@ spec:
         - name: NCCP_DB_NAME
           value: {{ .Values.dbName | quote }}
         - name: NCCP_DB_USER
-          value: {{ .Values.dbUser | quote }}
+          valueFrom:
+            secretKeyRef:
+              name: adr-vdatastorage-postgres-credentials
+              key: user
         - name: NCCP_DB_PASSWORD
-          value: {{ .Values.dbPassword | quote }}
+          valueFrom:
+            secretKeyRef:
+              name: adr-vdatastorage-postgres-credentials
+              key: password
         ports:
         - containerPort: 80

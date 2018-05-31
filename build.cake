@@ -1,25 +1,25 @@
 #load "utils.cake"
 
+// Required args
+var dbName = RequiredArgument("dbName");
+var branchName = RequiredArgument("branchName");
+var commitSha = RequiredArgument("commitSha");
+// Overridable Args
 var target = Argument("target", "Default");
 var appName = Argument("appName", "no-cream-cheese-pls");
 var configuration = Argument("configuration", "Release");
 var deploymentEnvironment = Argument("deploymentEnvironment", "Development");
+var domain = Argument("domain", "no-cream-cheese-pls.momo-adew.com");
+var dockerRegistry = Argument("dockerRegistry", "adr-vdatastorage:5000");
+
+
 var clientProjectDirectory = Directory("./client");
 var serverProjectDirectory = Directory("./server");
 var helmChartDirectory = Directory("./helm-chart");
-var dockerRegistry = ArgumentEnvironmentOrDefault("dockerRegistry", "DOCKER_REGISTRY", "");
-var branchName = Argument("branchName", "dev");
-var commitSha = Argument("commitSha", "testing");
 var shortenedCommitSha = ShortenedCommitSha(commitSha);
 var webDockerImageTag = BuildDockerImageTag(dockerRegistry, appName, branchName, shortenedCommitSha);
 var migrationsDockerImageTag = BuildDockerImageTag(dockerRegistry, $"{appName}-db-migrations", branchName, shortenedCommitSha);
-
-// All things database
-var integrationTestingDbHost = Argument("integrationTestingDbHost", "");
-var integrationTestingDbPort = Argument("integrationTestingDbPort", "");
-var integrationTestingDbUser = Argument("integrationTestingDbUser", "");
-var integrationTestingDbPassword = Argument("integrationTestingDbPassword", "");
-var integrationTestingDbName = Argument("integrationTestingDbName", "");
+var deploymentUrl = BuildDeploymentUrl(domain, deploymentEnvironment, branchName);
 
 
 Task("Restore Client Packages")
@@ -92,9 +92,11 @@ Task("Deploy to Kubernetes Cluster")
     --install
     --wait
     --namespace {deploymentEnvironment.ToLower()}
-    --set branchName={branchName}
+    --set deploymentEnvironment={deploymentEnvironment}
     --set webDockerImage={webDockerImageTag}
     --set dbMigrationsDockerImage={migrationsDockerImageTag}
+    --set dbName={dbName}
+    --set deploymentUrl={deploymentUrl}
     {appName} .",
     WorkingDirectory = helmChartDirectory
   });

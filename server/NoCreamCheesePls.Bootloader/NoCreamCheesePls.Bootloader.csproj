@@ -1,22 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
     <PackageReference Include="FluentValidation" Version="7.5.2" />
     <PackageReference Include="MediatR" Version="4.1.0" />
     <PackageReference Include="StructureMap" Version="4.6.1" />
     <PackageReference Include="StructureMap.Microsoft.DependencyInjection" Version="1.4.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NoCreamCheesePls.Api.Models\NoCreamCheesePls.Api.Models.csproj" />
     <ProjectReference Include="..\NoCreamCheesePls.Business\NoCreamCheesePls.Business.csproj" />
     <ProjectReference Include="..\NoCreamCheesePls.Data\NoCreamCheesePls.Data.csproj" />
   </ItemGroup>
-
 </Project>
