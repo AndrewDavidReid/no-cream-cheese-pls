@@ -24,6 +24,7 @@ var integrationTestsDockerImageTag = BuildDockerImageTag(dockerRegistry, $"{appN
 var deploymentUrl = BuildDeploymentUrl(domain, deploymentEnvironment, branchName);
 
 // Integration testing connection string details
+var integrationTestingDbHost = "test-db";
 var integrationTestingDbName = "testing";
 var integrationTestingDbPassword = "password";
 var integrationTestingDatabaseContainerName = "nccp-testing-db";
@@ -56,7 +57,6 @@ Task("Run Integration Tests")
     --name {integrationTestingDatabaseContainerName}
     -e POSTGRES_DB={integrationTestingDbName}
     -e POSTGRES_PASSWORD={integrationTestingDbPassword}
-    -p 5432:5432
     -d postgres:9.6.9"
   });
 
@@ -70,8 +70,9 @@ Task("Run Integration Tests")
     var exitCode = StartProcess("docker", new ProcessSettings {
       Arguments = $@"run
       --rm
+      --link {integrationTestingDatabaseContainerName}:{integrationTestingDbHost}
       -e ASPNETCORE_ENVIRONMENT='Development'
-      -e NCCP_DB_HOST='0.0.0.0'
+      -e NCCP_DB_HOST='${integrationTestingDbHost}'
       -e NCCP_DB_PORT='5432'
       -e NCCP_DB_NAME='${integrationTestingDbName}'
       -e NCCP_DB_USER='postgres'
