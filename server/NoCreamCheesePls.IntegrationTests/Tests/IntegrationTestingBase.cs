@@ -36,7 +36,12 @@ namespace NoCreamCheesePls.IntegrationTests.Tests
 
     protected async Task AddShoppingList()
     {
-      await ShoppingListRepository.CreateShoppingListAsync(TestObjects.KnownShippingList);
+      await ShoppingListRepository.CreateShoppingListAsync(TestObjects.KnownShoppingList);
+    }
+
+    protected async Task AddShoppingListItem()
+    {
+      await ShoppingListRepository.CreateShoppingListItemAsync(TestObjects.KnownShoppingListItem);
     }
 
     private async Task ResetData()

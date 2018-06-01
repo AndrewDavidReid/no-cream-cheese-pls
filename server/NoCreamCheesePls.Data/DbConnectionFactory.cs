@@ -6,7 +6,10 @@ namespace NoCreamCheesePls.Data
 {
   public static class DbConnectionFactory
   {
-    public static IDbConnection GetInstance => new NpgsqlConnection(GetDefaultConnectionString + "Enlist=true");
+    public static IDbConnection GetInstance()
+    {
+      return new NpgsqlConnection(GetDefaultConnectionString + "Enlist=true");
+    }
 
     public static string GetDefaultConnectionString => string.Format(
       "Host={0};Port={1};Database={2};Username={3};Password={4};",

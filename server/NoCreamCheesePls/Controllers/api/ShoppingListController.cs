@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediatR;
@@ -30,11 +31,41 @@ namespace NoCreamCheesePls.Controllers.api
       return Ok(await m_ShoppingListQueries.GetAllShoppingListsAsync());
     }
 
+    [HttpGet]
+    [Route("{id}/with-items")]
+    public async Task<ActionResult<ShoppingListWithItemsQueryResult>> GetWithItems(Guid id)
+    {
+      var shopping_list = await m_ShoppingListQueries.GetShoppingListWithItemsAsync(id);
+
+      if (shopping_list != null)
+      {
+        return shopping_list;
+      }
+
+      return NotFound();
+    }
+
     [HttpPost]
     [Route("create")]
     public async Task<ActionResult<CreateShoppingListResult>> Create()
     {
       return await m_Mediator.Send(new CreateShoppingList());
+    }
+
+    [HttpPost]
+    [Route("create-item")]
+    public async Task<ActionResult<CreateShoppingListItemResult>> CreateItem(CreateShoppingListItem command)
+    {
+      return await m_Mediator.Send(command);
+    }
+
+    [HttpPut]
+    [Route("update-item")]
+    public async Task<ActionResult> UpdateItem(UpdateShoppingListItem command)
+    {
+      await m_Mediator.Send(command);
+
+      return Ok();
     }
   }
 }

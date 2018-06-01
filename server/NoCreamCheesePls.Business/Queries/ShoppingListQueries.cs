@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -21,6 +22,13 @@ namespace NoCreamCheesePls.Business.Queries
       var results = await m_ShoppingListRepository.GetAllShoppingListsAsync();
 
       return Mapper.Map<IEnumerable<ShoppingListQueryResult>>(results);
+    }
+
+    public async Task<ShoppingListWithItemsQueryResult> GetShoppingListWithItemsAsync(Guid id)
+    {
+      var results = await m_ShoppingListRepository.GetShoppingListWithItemsAsync(id);
+
+      return Mapper.Map<ShoppingListWithItemsQueryResult>(results);
     }
   }
 }

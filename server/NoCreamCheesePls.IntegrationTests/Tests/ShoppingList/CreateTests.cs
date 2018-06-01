@@ -12,7 +12,7 @@ namespace NoCreamCheesePls.IntegrationTests.Tests.ShoppingList
     [Fact]
     public async Task WhenCalled_ReturnsCreatedListId()
     {
-      var response = await ApiClient.ShoppingList.Create();
+      var response = await ApiClient.ShoppingList.CreateAsync();
 
       response.CreatedId.Should().NotBeEmpty();
     }
