@@ -1,0 +1,3 @@
+dbHost: adr-vdatastorage
+dbPort: 5432
+databaseProvider: postgres

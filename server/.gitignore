@@ -1,0 +1,11 @@
+.vscode/
+obj/
+bin/
+.vs/
+Veriplay.Common.userprefs
+.idea
+tools/*
+!tools/packages.config
+Package/
+*.runsettings
+Veriplay.Common.sln.DotSettings.user

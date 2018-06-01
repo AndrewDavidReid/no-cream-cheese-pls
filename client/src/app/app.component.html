@@ -1,0 +1,9 @@
+<mat-toolbar color="primary">
+  <span>{{NavbarTitle}}</span>
+</mat-toolbar>
+
+<div [ngClass]="{'disable-pointer-events': ShowLoadingSpinner}">
+  <router-outlet></router-outlet>
+</div>
+
+<nccp-loading-overlay *ngIf="ShowLoadingSpinner"></nccp-loading-overlay>

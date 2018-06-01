@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ default 1 .Values.numberOfReplicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}
+        image: {{ .Values.webDockerImage }}
+        imagePullPolicy: Always
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: {{ .Values.deploymentEnvironment | quote }}
+        - name: NCCP_DB_HOST
+          value: {{ .Values.dbHost | quote }}
+        - name: NCCP_DB_PORT
+          value: {{ .Values.dbPort | quote }}
+        - name: NCCP_DB_NAME
+          value: {{ .Values.dbName | quote }}
+        - name: NCCP_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: adr-vdatastorage-postgres-credentials
+              key: user
+        - name: NCCP_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: adr-vdatastorage-postgres-credentials
+              key: password
+        ports:
+        - containerPort: 80
