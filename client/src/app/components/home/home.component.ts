@@ -30,10 +30,14 @@ export class HomeComponent implements OnInit
   {
     this.loadingService.ShowOverlay();
 
-    this.httpClient.post<CreateShoppingListResult>("/api/shopping-list/create", {}).subscribe(response => {
-      this.router.navigate(["shopping-list", response.CreatedId]);
-    }, error => {
-      console.log(error);
-    })
+    setTimeout(() => {
+      this.loadingService.HideOverlay();
+    }, 3000)
+
+    // this.httpClient.post<CreateShoppingListResult>("/api/shopping-list/create", {}).subscribe(response => {
+    //   this.router.navigate(["shopping-list", response.CreatedId]);
+    // }, error => {
+    //   console.log(error);
+    // })
   }
 }
