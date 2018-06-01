@@ -55,8 +55,10 @@ Task("Run Integration Tests")
   StartProcess("docker", new ProcessSettings {
     Arguments = $@"run
     --name {integrationTestingDatabaseContainerName}
+    -e POSTGRES_USER='postgres'
     -e POSTGRES_DB={integrationTestingDbName}
     -e POSTGRES_PASSWORD={integrationTestingDbPassword}
+    -p 5432:5432
     -d postgres:9.6.9"
   });
 
