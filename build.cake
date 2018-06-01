@@ -67,7 +67,7 @@ Task("Run Integration Tests")
       WorkingDirectory = serverProjectDirectory
     });
 
-    StartProcess("docker", new ProcessSettings {
+    var exitCode = StartProcess("docker", new ProcessSettings {
       Arguments = $@"run
       --rm
       -e ASPNETCORE_ENVIRONMENT='Development'
@@ -79,6 +79,11 @@ Task("Run Integration Tests")
       {integrationTestsDockerImageTag}",
       WorkingDirectory = serverProjectDirectory
     });
+
+    if (exitCode != 0)
+    {
+      throw new Exception("Integration test failure");
+    }
   }
   finally
   {
