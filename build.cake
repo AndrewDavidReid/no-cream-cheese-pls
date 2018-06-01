@@ -64,11 +64,14 @@ Task("Run Integration Tests")
 
   try
   {
+    // TODO: Run migrations against test database
+
     StartProcess("docker", new ProcessSettings {
       Arguments = $@"build --tag {integrationTestsDockerImageTag} --build-arg TESTS_PROJECT='NoCreamCheesePls.IntegrationTests' .",
       WorkingDirectory = serverProjectDirectory
     });
 
+    // TODO: Fix the network connectivity to the database container.
     var exitCode = StartProcess("docker", new ProcessSettings {
       Arguments = $@"run
       --rm
