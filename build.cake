@@ -4,15 +4,16 @@
 var dbName = RequiredArgument("dbName");
 var branchName = RequiredArgument("branchName");
 var commitSha = RequiredArgument("commitSha");
-// Overridable Args
+var appName = RequiredArgument("appName");
+var deploymentEnvironment = RequiredArgument("deploymentEnvironment");
+var domain = RequiredArgument("domain");
+var dockerRegistry = RequiredArgument("dockerRegistry");
+
+// Rarely overrided args.
 var target = Argument("target", "Default");
-var appName = Argument("appName", "no-cream-cheese-pls");
 var configuration = Argument("configuration", "Release");
-var deploymentEnvironment = Argument("deploymentEnvironment", "Development");
-var domain = Argument("domain", "no-cream-cheese-pls.momo-adew.com");
-var dockerRegistry = Argument("dockerRegistry", "adr-vdatastorage:5000");
 
-
+// vars
 var clientProjectDirectory = Directory("./client");
 var serverProjectDirectory = Directory("./server");
 var helmChartDirectory = Directory("./helm-chart");
