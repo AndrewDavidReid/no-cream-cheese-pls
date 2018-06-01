@@ -98,12 +98,18 @@ Task("Deploy to Kubernetes Cluster")
     --set dbMigrationsDockerImage={migrationsDockerImageTag}
     --set dbName={dbName}
     --set deploymentUrl={deploymentUrl}
-    {appName} .",
+    {appName}-{deploymentEnvironment.ToLower()} .",
     WorkingDirectory = helmChartDirectory
   });
 });
 
+Task("Log Results")
+.IsDependentOn("Deploy to Kubernetes Cluster")
+.Does(() => {
+  Information($"App has successfully been deployed to http://{deploymentUrl}");
+});
+
 Task("Default")
-.IsDependentOn("Deploy to Kubernetes Cluster");
+.IsDependentOn("Log Results");
 
 RunTarget(target);
