@@ -14,6 +14,7 @@ import {
 } from '@angular/material';
 import { HomeComponent } from './components/home/home.component';
 import { LoadingOverlayComponent } from './components/loading-overlay/loading-overlay.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { LoadingOverlayComponent } from './components/loading-overlay/loading-ov
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatMenuModule,
