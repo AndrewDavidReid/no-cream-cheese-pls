@@ -90,7 +90,7 @@ Task("Run Integration Tests")
     Arguments = $@"run
     --name {integrationTestingDatabaseContainerName}
     --network={integrationTestingNetworkName}
-    -e POSTGRES_USER='postgres'
+    -e POSTGRES_USER=postgres
     -e POSTGRES_DB={integrationTestingDbName}
     -e POSTGRES_PASSWORD={integrationTestingDbPassword}
     -d postgres:9.6.9"
@@ -98,14 +98,14 @@ Task("Run Integration Tests")
 
   try
   {
-    // Run migrations against the test database
+    Information($"Running migrations against integration test database: {integrationTestingDatabaseContainerName}");
     var migrationsExitCode = StartProcess("docker", new ProcessSettings {
       Arguments = $@"run
       --rm
       --network={integrationTestingNetworkName}
-      -e DEPLOYMENT_ENVIRONMENT='{deploymentEnvironment}'
-      -e DATABASE_PROVIDER='{databaseProvider}'
-      -e CONNECTION_STRING='Host={integrationTestingDatabaseContainerName};Port=5432;Database={integrationTestingDbName};Username=postgres;Password={integrationTestingDbPassword};'
+      -e DEPLOYMENT_ENVIRONMENT={deploymentEnvironment}
+      -e DATABASE_PROVIDER={databaseProvider}
+      -e CONNECTION_STRING=""Host={integrationTestingDatabaseContainerName};Port=5432;Database={integrationTestingDbName};Username=postgres;Password={integrationTestingDbPassword};""
       {migrationsDockerImageTag}",
       WorkingDirectory = serverProjectDirectory
     });
@@ -121,16 +121,17 @@ Task("Run Integration Tests")
     ThrowOnNonZeroExitCode(integrationTestsBuildExitCode);
 
     Information($"Running integration tests");
+    // Always use the development environment for integration tests.
     var integrationTestsExitCode = StartProcess("docker", new ProcessSettings {
       Arguments = $@"run
       --rm
       --network={integrationTestingNetworkName}
-      -e ASPNETCORE_ENVIRONMENT='Development'
-      -e NCCP_DB_HOST='${integrationTestingDatabaseContainerName}'
-      -e NCCP_DB_PORT='5432'
-      -e NCCP_DB_NAME='${integrationTestingDbName}'
-      -e NCCP_DB_USER='postgres'
-      -e NCCP_DB_PASSWORD='${integrationTestingDbPassword}'
+      -e ASPNETCORE_ENVIRONMENT=Development
+      -e NCCP_DB_HOST=${integrationTestingDatabaseContainerName}
+      -e NCCP_DB_PORT=5432
+      -e NCCP_DB_NAME=${integrationTestingDbName}
+      -e NCCP_DB_USER=postgres
+      -e NCCP_DB_PASSWORD=${integrationTestingDbPassword}
       {integrationTestsDockerImageTag}",
       WorkingDirectory = serverProjectDirectory
     });
