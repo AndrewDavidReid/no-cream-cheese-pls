@@ -32,8 +32,7 @@ export class HomeComponent implements OnInit
 
     setTimeout(() => {
       this.loadingService.HideOverlay();
-    }, 3000);
-
+    }, 3000)
     // this.httpClient.post<CreateShoppingListResult>("/api/shopping-list/create", {}).subscribe(response => {
     //   this.router.navigate(["shopping-list", response.CreatedId]);
     // }, error => {
