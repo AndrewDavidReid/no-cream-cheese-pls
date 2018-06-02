@@ -98,27 +98,8 @@ Task("Run Integration Tests")
 
   try
   {
-    // It can take a bit of time for the postgres db to come online, so we try to hit it every 500ms
-    var attempt = 1;
-    while (attempt <= 10)
-    {
-      Information($"Attempting to connect to integration test database: {integrationTestingDatabaseContainerName}");
-      var exitCode = StartProcess("docker", new ProcessSettings {
-        Arguments = $@"run
-        --rm
-        --network={integrationTestingNetworkName}
-        {integrationTestingDatabaseContainerName} psql -h {integrationTestingDatabaseContainerName} -U postgres"
-      });
-
-      // If we get an exit code of 0, break out of the loop, we are good to run our tests
-      if (exitCode == 0)
-      {
-        break;
-      }
-
-      await System.Threading.Tasks.Task.Delay(500);
-      attempt++;
-    }
+    // It takes a bit of time for the postgres container to come online.
+    await System.Threading.Tasks.Task.Delay(7500);
 
     Information($"Running migrations against integration test database: {integrationTestingDatabaseContainerName}");
     var migrationsExitCode = StartProcess("docker", new ProcessSettings {
