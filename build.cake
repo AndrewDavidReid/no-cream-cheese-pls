@@ -14,7 +14,7 @@ var dockerRegistry = RequiredArgument("dockerRegistry");
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var databaseProvider = Argument("databaseProvider", "postgres");
-var dbPort = Argument("dbPort", "5432`");
+var dbPort = Argument("dbPort", "5432");
 
 // vars
 var clientProjectDirectory = Directory("./client");
