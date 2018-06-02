@@ -28,6 +28,7 @@ var deploymentUrl = BuildDeploymentUrl(domain, deploymentEnvironment, branchName
 
 // Integration testing connection string details
 var integrationTestingDbName = "test-db";
+var integrationTestingDbUser = "tester";
 var integrationTestingDbPassword = "password";
 var integrationTestingDatabaseContainerName = "nccp-testing-postgres";
 var integrationTestingNetworkName = "integration-testing-network";
@@ -53,7 +54,7 @@ Task("Build Client Project")
 });
 
 Task("Build Web Docker Image")
-// .IsDependentOn("Build Client Project")
+.IsDependentOn("Build Client Project")
 .Does(() => {
 
   StartProcess("docker", new ProcessSettings {
@@ -79,18 +80,19 @@ Task("Run Integration Tests")
 .IsDependentOn("Build Migrations Docker Image")
 .Does(async () => {
 
+  // Create a bridged user network. This gives us DNS via container name to other containers on the network.
   Information($"Creating integration test container network: {integrationTestingNetworkName}");
   StartProcess("docker", new ProcessSettings {
     Arguments = $"network create {integrationTestingNetworkName}"
   });
 
-  Information($"Creating database container for integration tests: {integrationTestingDatabaseContainerName}");
   // Spin up a test database
+  Information($"Creating database container for integration tests: {integrationTestingDatabaseContainerName}");
   StartProcess("docker", new ProcessSettings {
     Arguments = $@"run
     --name {integrationTestingDatabaseContainerName}
     --network={integrationTestingNetworkName}
-    -e POSTGRES_USER=postgres
+    -e POSTGRES_USER={integrationTestingDbUser}
     -e POSTGRES_DB={integrationTestingDbName}
     -e POSTGRES_PASSWORD={integrationTestingDbPassword}
     -d postgres:9.6.9"
@@ -98,8 +100,8 @@ Task("Run Integration Tests")
 
   try
   {
-    // It takes a bit of time for the postgres container to come online.
-    await System.Threading.Tasks.Task.Delay(7500);
+    // Wait a few seconds for the DB container to come online before we try to run migrations against it.
+    await System.Threading.Tasks.Task.Delay(5000);
 
     Information($"Running migrations against integration test database: {integrationTestingDatabaseContainerName}");
     var migrationsExitCode = StartProcess("docker", new ProcessSettings {
@@ -108,7 +110,7 @@ Task("Run Integration Tests")
         --network={integrationTestingNetworkName}
         -e DEPLOYMENT_ENVIRONMENT={deploymentEnvironment}
         -e DATABASE_PROVIDER={databaseProvider}
-        -e CONNECTION_STRING=""Host={integrationTestingDatabaseContainerName};Port=5432;Database={integrationTestingDbName};Username=postgres;Password={integrationTestingDbPassword};""
+        -e CONNECTION_STRING=""Host={integrationTestingDatabaseContainerName};Port=5432;Database={integrationTestingDbName};Username={integrationTestingDbUser};Password={integrationTestingDbPassword};""
         {migrationsDockerImageTag}"
       });
 
@@ -129,11 +131,11 @@ Task("Run Integration Tests")
       --rm
       --network={integrationTestingNetworkName}
       -e ASPNETCORE_ENVIRONMENT=Development
-      -e NCCP_DB_HOST=${integrationTestingDatabaseContainerName}
+      -e NCCP_DB_HOST={integrationTestingDatabaseContainerName}
       -e NCCP_DB_PORT=5432
-      -e NCCP_DB_NAME=${integrationTestingDbName}
-      -e NCCP_DB_USER=postgres
-      -e NCCP_DB_PASSWORD=${integrationTestingDbPassword}
+      -e NCCP_DB_NAME={integrationTestingDbName}
+      -e NCCP_DB_USER={integrationTestingDbUser}
+      -e NCCP_DB_PASSWORD={integrationTestingDbPassword}
       {integrationTestsDockerImageTag}"
     });
 
@@ -141,11 +143,13 @@ Task("Run Integration Tests")
   }
   finally
   {
+    // Tear down the test database
     Information($"Deleting integration test database container: {integrationTestingDatabaseContainerName}");
     StartProcess("docker", new ProcessSettings {
       Arguments = $@"rm --force {integrationTestingDatabaseContainerName}"
     });
 
+    // Tear down the test network
     Information($"Deleting integration test container network: {integrationTestingDatabaseContainerName}");
     StartProcess("docker", new ProcessSettings {
       Arguments = $@"network rm {integrationTestingNetworkName}"
