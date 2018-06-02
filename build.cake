@@ -77,7 +77,7 @@ Task("Build Migrations Docker Image")
 
 Task("Run Integration Tests")
 .IsDependentOn("Build Migrations Docker Image")
-.Does(() => {
+.Does(async () => {
 
   Information($"Creating integration test container network: {integrationTestingNetworkName}");
   StartProcess("docker", new ProcessSettings {
@@ -98,17 +98,38 @@ Task("Run Integration Tests")
 
   try
   {
+    // It can take a bit of time for the postgres db to come online, so we try to hit it every 500ms
+    var attempt = 1;
+    while (attempt <= 10)
+    {
+      Information($"Attempting to connect to integration test database: {integrationTestingDatabaseContainerName}");
+      var exitCode = StartProcess("docker", new ProcessSettings {
+        Arguments = $@"run
+        --rm
+        --network={integrationTestingNetworkName}
+        {integrationTestingDatabaseContainerName} psql -h {integrationTestingDatabaseContainerName} -U postgres"
+      });
+
+      // If we get an exit code of 0, break out of the loop, we are good to run our tests
+      if (exitCode == 0)
+      {
+        break;
+      }
+
+      await System.Threading.Tasks.Task.Delay(500);
+      attempt++;
+    }
+
     Information($"Running migrations against integration test database: {integrationTestingDatabaseContainerName}");
     var migrationsExitCode = StartProcess("docker", new ProcessSettings {
-      Arguments = $@"run
-      --rm
-      --network={integrationTestingNetworkName}
-      -e DEPLOYMENT_ENVIRONMENT={deploymentEnvironment}
-      -e DATABASE_PROVIDER={databaseProvider}
-      -e CONNECTION_STRING=""Host={integrationTestingDatabaseContainerName};Port=5432;Database={integrationTestingDbName};Username=postgres;Password={integrationTestingDbPassword};""
-      {migrationsDockerImageTag}",
-      WorkingDirectory = serverProjectDirectory
-    });
+        Arguments = $@"run
+        --rm
+        --network={integrationTestingNetworkName}
+        -e DEPLOYMENT_ENVIRONMENT={deploymentEnvironment}
+        -e DATABASE_PROVIDER={databaseProvider}
+        -e CONNECTION_STRING=""Host={integrationTestingDatabaseContainerName};Port=5432;Database={integrationTestingDbName};Username=postgres;Password={integrationTestingDbPassword};""
+        {migrationsDockerImageTag}"
+      });
 
     ThrowOnNonZeroExitCode(migrationsExitCode);
 
@@ -132,8 +153,7 @@ Task("Run Integration Tests")
       -e NCCP_DB_NAME=${integrationTestingDbName}
       -e NCCP_DB_USER=postgres
       -e NCCP_DB_PASSWORD=${integrationTestingDbPassword}
-      {integrationTestsDockerImageTag}",
-      WorkingDirectory = serverProjectDirectory
+      {integrationTestsDockerImageTag}"
     });
 
     ThrowOnNonZeroExitCode(integrationTestsExitCode);
