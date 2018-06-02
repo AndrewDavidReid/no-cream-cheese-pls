@@ -53,7 +53,7 @@ Task("Build Client Project")
 });
 
 Task("Build Web Docker Image")
-.IsDependentOn("Build Client Project")
+// .IsDependentOn("Build Client Project")
 .Does(() => {
 
   StartProcess("docker", new ProcessSettings {
@@ -99,7 +99,7 @@ Task("Run Integration Tests")
   try
   {
     // Run migrations against the test database
-    StartProcess("docker", new ProcessSettings {
+    var migrationsExitCode = StartProcess("docker", new ProcessSettings {
       Arguments = $@"run
       --rm
       --network={integrationTestingNetworkName}
@@ -110,14 +110,18 @@ Task("Run Integration Tests")
       WorkingDirectory = serverProjectDirectory
     });
 
+    ThrowOnNonZeroExitCode(migrationsExitCode);
+
     Information($"Building integration test container image: {integrationTestsDockerImageTag}");
-    StartProcess("docker", new ProcessSettings {
+    var integrationTestsBuildExitCode = StartProcess("docker", new ProcessSettings {
       Arguments = $@"build --tag {integrationTestsDockerImageTag} --build-arg TESTS_PROJECT='NoCreamCheesePls.IntegrationTests' .",
       WorkingDirectory = serverProjectDirectory
     });
 
+    ThrowOnNonZeroExitCode(integrationTestsBuildExitCode);
+
     Information($"Running integration tests");
-    var exitCode = StartProcess("docker", new ProcessSettings {
+    var integrationTestsExitCode = StartProcess("docker", new ProcessSettings {
       Arguments = $@"run
       --rm
       --network={integrationTestingNetworkName}
@@ -131,10 +135,7 @@ Task("Run Integration Tests")
       WorkingDirectory = serverProjectDirectory
     });
 
-    if (exitCode != 0)
-    {
-      throw new Exception("Integration Testing Failure");
-    }
+    ThrowOnNonZeroExitCode(integrationTestsExitCode);
   }
   finally
   {

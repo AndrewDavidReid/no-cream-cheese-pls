@@ -36,3 +36,10 @@ Func<string, string, string, string> BuildDeploymentUrl = (domain, deploymentEnv
   // TODO: Sanitize the branch name
   return $"{branchName}.{domain}";
 };
+
+Action<int> ThrowOnNonZeroExitCode = (exitCode) => {
+  if (exitCode != 0)
+  {
+    throw new Exception("Non 0 exit code returned");
+  }
+};
