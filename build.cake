@@ -2,6 +2,7 @@
 
 // Required args
 var dbName = RequiredArgument("dbName");
+var dbHost = RequiredArgument("dbHost");
 var branchName = RequiredArgument("branchName");
 var commitSha = RequiredArgument("commitSha");
 var appName = RequiredArgument("appName");
@@ -12,6 +13,8 @@ var dockerRegistry = RequiredArgument("dockerRegistry");
 // Rarely overrided args.
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var databaseProvider = Argument("databaseProvider", "postgres");
+var dbPort = Argument("dbPort", "5432");
 
 // vars
 var clientProjectDirectory = Directory("./client");
@@ -20,13 +23,21 @@ var helmChartDirectory = Directory("./helm-chart");
 var shortenedCommitSha = ShortenedCommitSha(commitSha);
 var webDockerImageTag = BuildDockerImageTag(dockerRegistry, appName, branchName, shortenedCommitSha);
 var migrationsDockerImageTag = BuildDockerImageTag(dockerRegistry, $"{appName}-db-migrations", branchName, shortenedCommitSha);
+var integrationTestsDockerImageTag = BuildDockerImageTag(dockerRegistry, $"{appName}-integration-tests", branchName, shortenedCommitSha);
 var deploymentUrl = BuildDeploymentUrl(domain, deploymentEnvironment, branchName);
+
+// Integration testing connection string details
+var integrationTestingDbName = "test-db";
+var integrationTestingDbUser = "tester";
+var integrationTestingDbPassword = "password";
+var integrationTestingDatabaseContainerName = "nccp-testing-postgres";
+var integrationTestingNetworkName = "integration-testing-network";
 
 
 Task("Restore Client Packages")
 .Does(() => {
 
-  var exitCode = StartProcess("npm", new ProcessSettings {
+  StartProcess("npm", new ProcessSettings {
     Arguments = "install",
     WorkingDirectory = clientProjectDirectory
   });
@@ -36,7 +47,7 @@ Task("Build Client Project")
 .IsDependentOn("Restore Client Packages")
 .Does(() => {
 
-  var exitCode = StartProcess("npm", new ProcessSettings {
+  StartProcess("npm", new ProcessSettings {
     Arguments = $"run build --{deploymentEnvironment.ToLower()}",
     WorkingDirectory = clientProjectDirectory
   });
@@ -46,8 +57,8 @@ Task("Build Web Docker Image")
 .IsDependentOn("Build Client Project")
 .Does(() => {
 
-  var exitCode = StartProcess("docker", new ProcessSettings {
-    Arguments = $"build  -f ./NoCreamCheesePls/Dockerfile --tag {webDockerImageTag} .",
+  StartProcess("docker", new ProcessSettings {
+    Arguments = $"build -f ./NoCreamCheesePls/Dockerfile --tag {webDockerImageTag} .",
     WorkingDirectory = serverProjectDirectory
   });
 });
@@ -56,7 +67,7 @@ Task("Build Migrations Docker Image")
 .IsDependentOn("Build Web Docker Image")
 .Does(() => {
 
-  var exitCode = StartProcess("docker", new ProcessSettings {
+  StartProcess("docker", new ProcessSettings {
     Arguments = $@"build
     -f ./NoCreamCheesePls.Data.Migrations/Dockerfile
     --tag {migrationsDockerImageTag}
@@ -65,11 +76,92 @@ Task("Build Migrations Docker Image")
   });
 });
 
-Task("Push Web Docker Image to Registry")
+Task("Run Integration Tests")
 .IsDependentOn("Build Migrations Docker Image")
+.Does(async () => {
+
+  // Create a bridged user network. This gives us DNS via container name to other containers on the network.
+  Information($"Creating integration test container network: {integrationTestingNetworkName}");
+  StartProcess("docker", new ProcessSettings {
+    Arguments = $"network create {integrationTestingNetworkName}"
+  });
+
+  // Spin up a test database
+  Information($"Creating database container for integration tests: {integrationTestingDatabaseContainerName}");
+  StartProcess("docker", new ProcessSettings {
+    Arguments = $@"run
+    --name {integrationTestingDatabaseContainerName}
+    --network={integrationTestingNetworkName}
+    -e POSTGRES_USER={integrationTestingDbUser}
+    -e POSTGRES_DB={integrationTestingDbName}
+    -e POSTGRES_PASSWORD={integrationTestingDbPassword}
+    -d postgres:9.6.9"
+  });
+
+  try
+  {
+    // Wait a few seconds for the DB container to come online before we try to run migrations against it.
+    await System.Threading.Tasks.Task.Delay(5000);
+
+    Information($"Running migrations against integration test database: {integrationTestingDatabaseContainerName}");
+    var migrationsExitCode = StartProcess("docker", new ProcessSettings {
+        Arguments = $@"run
+        --rm
+        --network={integrationTestingNetworkName}
+        -e DEPLOYMENT_ENVIRONMENT={deploymentEnvironment}
+        -e DATABASE_PROVIDER={databaseProvider}
+        -e CONNECTION_STRING=""Host={integrationTestingDatabaseContainerName};Port=5432;Database={integrationTestingDbName};Username={integrationTestingDbUser};Password={integrationTestingDbPassword};""
+        {migrationsDockerImageTag}"
+      });
+
+    ThrowOnNonZeroExitCode(migrationsExitCode);
+
+    Information($"Building integration test container image: {integrationTestsDockerImageTag}");
+    var integrationTestsBuildExitCode = StartProcess("docker", new ProcessSettings {
+      Arguments = $@"build --tag {integrationTestsDockerImageTag} --build-arg TESTS_PROJECT='NoCreamCheesePls.IntegrationTests' .",
+      WorkingDirectory = serverProjectDirectory
+    });
+
+    ThrowOnNonZeroExitCode(integrationTestsBuildExitCode);
+
+    Information($"Running integration tests");
+    // Always use the development environment for integration tests.
+    var integrationTestsExitCode = StartProcess("docker", new ProcessSettings {
+      Arguments = $@"run
+      --rm
+      --network={integrationTestingNetworkName}
+      -e ASPNETCORE_ENVIRONMENT=Development
+      -e NCCP_DB_HOST={integrationTestingDatabaseContainerName}
+      -e NCCP_DB_PORT=5432
+      -e NCCP_DB_NAME={integrationTestingDbName}
+      -e NCCP_DB_USER={integrationTestingDbUser}
+      -e NCCP_DB_PASSWORD={integrationTestingDbPassword}
+      {integrationTestsDockerImageTag}"
+    });
+
+    ThrowOnNonZeroExitCode(integrationTestsExitCode);
+  }
+  finally
+  {
+    // Tear down the test database
+    Information($"Deleting integration test database container: {integrationTestingDatabaseContainerName}");
+    StartProcess("docker", new ProcessSettings {
+      Arguments = $@"rm --force {integrationTestingDatabaseContainerName}"
+    });
+
+    // Tear down the test network
+    Information($"Deleting integration test container network: {integrationTestingDatabaseContainerName}");
+    StartProcess("docker", new ProcessSettings {
+      Arguments = $@"network rm {integrationTestingNetworkName}"
+    });
+  }
+});
+
+Task("Push Web Docker Image to Registry")
+.IsDependentOn("Run Integration Tests")
 .Does(() => {
 
-  var exitCode = StartProcess("docker", new ProcessSettings {
+  StartProcess("docker", new ProcessSettings {
     Arguments = $"push {webDockerImageTag}"
   });
 });
@@ -78,7 +170,7 @@ Task("Push Migrations Docker Image to Registry")
 .IsDependentOn("Push Web Docker Image to Registry")
 .Does(() => {
 
-  var exitCode = StartProcess("docker", new ProcessSettings {
+  StartProcess("docker", new ProcessSettings {
     Arguments = $"push {migrationsDockerImageTag}"
   });
 });
@@ -87,7 +179,7 @@ Task("Deploy to Kubernetes Cluster")
 .IsDependentOn("Push Migrations Docker Image to Registry")
 .Does(() => {
 
-  var exitCode = StartProcess("helm", new ProcessSettings {
+  StartProcess("helm", new ProcessSettings {
     Arguments = $@"upgrade
     --debug
     --install
@@ -96,8 +188,11 @@ Task("Deploy to Kubernetes Cluster")
     --set deploymentEnvironment={deploymentEnvironment}
     --set webDockerImage={webDockerImageTag}
     --set dbMigrationsDockerImage={migrationsDockerImageTag}
+    --set dbHost={dbHost}
     --set dbName={dbName}
+    --set dbPort={dbPort}
     --set deploymentUrl={deploymentUrl}
+    --set databaseProvider={databaseProvider}
     {appName}-{deploymentEnvironment.ToLower()} .",
     WorkingDirectory = helmChartDirectory
   });
