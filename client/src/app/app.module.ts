@@ -1,9 +1,8 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { BrowserModule } from "@angular/platform-browser";
+import { NgModule } from "@angular/core";
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppComponent } from "./containers/app/app.component";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import {
   MatIconModule,
   MatMenuModule,
@@ -11,21 +10,24 @@ import {
   MatButtonModule,
   MatListModule,
   MatProgressSpinnerModule
-} from '@angular/material';
-import { HomeComponent } from './components/home/home.component';
-import { LoadingOverlayComponent } from './components/loading-overlay/loading-overlay.component';
-import { HttpClientModule } from '@angular/common/http';
+} from "@angular/material";
+import { HttpClientModule } from "@angular/common/http";
+import { SharedModule } from "../shared/shared.module";
+import { Routes, RouterModule } from "@angular/router";
+
+const ROUTES: Routes = [
+  { path: "", pathMatch: "full", redirectTo: "shopping-lists" },
+  {
+    path: "shopping-lists",
+    loadChildren: "../shopping-list/shopping-list.module#ShoppingListModule"
+  }
+];
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    LoadingOverlayComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
     MatMenuModule,
@@ -33,9 +35,11 @@ import { HttpClientModule } from '@angular/common/http';
     MatToolbarModule,
     MatButtonModule,
     MatListModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    SharedModule,
+    RouterModule.forRoot(ROUTES)
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
