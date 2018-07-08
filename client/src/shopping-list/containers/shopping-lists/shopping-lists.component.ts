@@ -11,7 +11,9 @@ export class ShoppingListsComponent implements OnInit {
 
   public ShoppingLists: ShoppingList[];
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log("Arrived at ShoppingListsComponent");
+  }
 
   public AddNewList() {}
 }

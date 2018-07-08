@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { NavbarService } from "../../../shared/services";
 
 @Component({
   selector: "nccp-root",
@@ -7,12 +6,8 @@ import { NavbarService } from "../../../shared/services";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
-  constructor(public navbarService: NavbarService) {}
-
-  public NavbarTitle: string;
-  public ShowLoadingSpinner: boolean;
+  constructor() {}
 
   ngOnInit() {
-    this.navbarService.Title$.subscribe(title => (this.NavbarTitle = title));
   }
 }
