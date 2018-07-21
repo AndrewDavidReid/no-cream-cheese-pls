@@ -8,21 +8,13 @@ import {
 } from "@angular/material";
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { HttpClientModule } from "@angular/common/http";
-import { SharedModule } from "../shared/shared.module";
-import { Routes, RouterModule } from "@angular/router";
+import { SharedModule } from "./shared/shared.module";
 import { environment } from "../environments/environment";
-import { StoreModule } from "../../node_modules/@ngrx/store";
+import { StoreModule } from "@ngrx/store";
 
 import * as fromStore from "./store";
-import { EffectsModule } from "../../node_modules/@ngrx/effects";
-
-const ROUTES: Routes = [
-  { path: "", pathMatch: "full", redirectTo: "shopping-lists" },
-  {
-    path: "shopping-lists",
-    loadChildren: "../shopping-list/shopping-list.module#ShoppingListModule"
-  }
-];
+import { EffectsModule } from "@ngrx/effects";
+import { AppRoutingModule } from "./app-routing.module";
 
 @NgModule({
   declarations: [AppComponent],
@@ -33,13 +25,16 @@ const ROUTES: Routes = [
     HttpClientModule,
     MatToolbarModule,
     SharedModule,
-    RouterModule.forRoot(ROUTES),
+    AppRoutingModule,
     StoreModule.forRoot(fromStore.reducers),
     StoreRouterConnectingModule.forRoot({
       stateKey: 'router'
     }),
     EffectsModule.forRoot(fromStore.effects),
-    environment.production ? [] : StoreDevtoolsModule.instrument()
+    StoreDevtoolsModule.instrument({
+      name: "NoCreamCheesePls Store DevTools",
+      logOnly: environment.production
+    })
   ],
   providers: [{provide: RouterStateSerializer, useClass: fromStore.CustomSerializer}],
   bootstrap: [AppComponent]

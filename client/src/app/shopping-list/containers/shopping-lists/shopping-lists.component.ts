@@ -7,7 +7,8 @@ import { ShoppingList } from "../../models/shopping-list";
   styleUrls: ["./shopping-lists.component.scss"]
 })
 export class ShoppingListsComponent implements OnInit {
-  constructor() {}
+  constructor(private store: Store<>) {
+  }
 
   public ShoppingLists: ShoppingList[];
 

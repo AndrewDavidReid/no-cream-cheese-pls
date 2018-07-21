@@ -1,11 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "../../node_modules/@angular/router";
+import { RouterModule, Routes } from "@angular/router";
 
 import * as fromServices from "./services";
 import * as fromComponents from "./components";
 import * as fromContainers from "./containers";
-import { MatListModule, MatIconModule } from "../../node_modules/@angular/material";
+import { MatListModule, MatIconModule } from "@angular/material";
 
 export const ROUTES: Routes = [
   {
