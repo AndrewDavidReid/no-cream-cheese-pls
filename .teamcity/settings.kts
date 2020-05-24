@@ -29,6 +29,8 @@ version = "2019.2"
 project {
 
     buildType(Build)
+
+    subProject(Sub1)
 }
 
 object Build : BuildType({
@@ -50,4 +52,9 @@ object Build : BuildType({
         vcs {
         }
     }
+})
+
+
+object Sub1 : Project({
+    name = "sub1"
 })
