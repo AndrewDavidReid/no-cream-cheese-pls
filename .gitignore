@@ -3,3 +3,6 @@
 .vscode
 server/NoCreamCheesePls/wwwroot
 tools
+.idea
+.teamcity/target
+*.iml
