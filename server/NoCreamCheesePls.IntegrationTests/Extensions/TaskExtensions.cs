@@ -1,8 +1,9 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using Refit;
 using Xunit;
 
-namespace System.Threading.Tasks
+namespace NoCreamCheesePls.IntegrationTests.Extensions
 {
   public static class TaskExtensions
   {

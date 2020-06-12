@@ -1,7 +1,7 @@
 using NoCreamCheesePls.Data.Repositories;
 using StructureMap;
 
-namespace NoCreamCheesePls.Bootloader.Registries
+namespace NoCreamCheesePls.Infrastructure.Registries
 {
   public class DataRegistry : Registry
   {

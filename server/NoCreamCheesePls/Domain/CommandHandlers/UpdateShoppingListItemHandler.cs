@@ -3,11 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using NoCreamCheesePls.Api.Models.Command;
-using NoCreamCheesePls.Business.Exceptions;
-using NoCreamCheesePls.Data.Models;
 using NoCreamCheesePls.Data.Repositories.Abstractions;
+using NoCreamCheesePls.Domain.Exceptions;
 
-namespace NoCreamCheesePls.Business.CommandHandlers
+namespace NoCreamCheesePls.Domain.CommandHandlers
 {
     public class UpdateShoppingListItemHandler : IRequestHandler<UpdateShoppingListItem>
     {

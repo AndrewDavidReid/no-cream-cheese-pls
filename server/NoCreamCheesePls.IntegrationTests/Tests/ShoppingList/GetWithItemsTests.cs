@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NoCreamCheesePls.IntegrationTests.Extensions;
 using Xunit;
 
 namespace NoCreamCheesePls.IntegrationTests.Tests.ShoppingList

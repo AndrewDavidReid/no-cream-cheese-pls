@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
-using NoCreamCheesePls.Business.Behaviors;
-using NoCreamCheesePls.Business.Validators;
+using NoCreamCheesePls.Domain.Behaviors;
+using NoCreamCheesePls.Domain.Validators;
 using StructureMap;
 
-namespace NoCreamCheesePls.Bootloader.Registries
+namespace NoCreamCheesePls.Infrastructure.Registries
 {
   public class ValidationRegistry : Registry
   {

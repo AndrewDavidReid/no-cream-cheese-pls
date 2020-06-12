@@ -3,7 +3,7 @@ using NoCreamCheesePls.Api.Models.QueryResults;
 using NoCreamCheesePls.Data.Models;
 using NoCreamCheesePls.Data.ReadModels;
 
-namespace NoCreamCheesePls.Bootloader.Mappings
+namespace NoCreamCheesePls.Infrastructure.Mappings
 {
   public class QueryMappingProfile : Profile
   {

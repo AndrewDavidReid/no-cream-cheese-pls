@@ -7,7 +7,7 @@ using NoCreamCheesePls.Api.Models.CommandResults;
 using NoCreamCheesePls.Data.Models;
 using NoCreamCheesePls.Data.Repositories.Abstractions;
 
-namespace NoCreamCheesePls.Business.CommandHandlers
+namespace NoCreamCheesePls.Domain.CommandHandlers
 {
   public class CreateShoppingListHandler : IRequestHandler<CreateShoppingList, CreateShoppingListResult>
   {

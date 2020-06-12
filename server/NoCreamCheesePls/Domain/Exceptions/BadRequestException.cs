@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NoCreamCheesePls.Business.Exceptions
+namespace NoCreamCheesePls.Domain.Exceptions
 {
   public class BadRequestException : Exception
   {

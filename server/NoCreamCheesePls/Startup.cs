@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using NoCreamCheesePls.Bootloader;
-using NoCreamCheesePls.Business.CommandHandlers;
-using NoCreamCheesePls.Filters;
+using NoCreamCheesePls.Domain.CommandHandlers;
+using NoCreamCheesePls.Infrastructure;
+using NoCreamCheesePls.Infrastructure.Filters;
 
 namespace NoCreamCheesePls
 {
