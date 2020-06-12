@@ -1,15 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentValidation;
 using MediatR;
 using NoCreamCheesePls.Api.Models.Command;
 using NoCreamCheesePls.Api.Models.CommandResults;
-using NoCreamCheesePls.Business.Exceptions;
 using NoCreamCheesePls.Data.Models;
 using NoCreamCheesePls.Data.Repositories.Abstractions;
+using NoCreamCheesePls.Domain.Exceptions;
 
-namespace NoCreamCheesePls.Business.CommandHandlers
+namespace NoCreamCheesePls.Domain.CommandHandlers
 {
   public class CreateShoppingListItemHandler : IRequestHandler<CreateShoppingListItem, CreateShoppingListItemResult>
   {

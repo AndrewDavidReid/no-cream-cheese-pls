@@ -2,11 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>NoCreamCheesePls.Api.Models</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Query\" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="4.1.0" />

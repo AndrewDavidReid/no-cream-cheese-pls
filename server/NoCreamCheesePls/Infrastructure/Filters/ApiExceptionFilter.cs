@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using NoCreamCheesePls.Business.Exceptions;
+using NoCreamCheesePls.Domain.Exceptions;
 
-namespace NoCreamCheesePls.Filters
+namespace NoCreamCheesePls.Infrastructure.Filters
 {
   public class ApiExceptionFilter : ExceptionFilterAttribute
   {

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NoCreamCheesePls.Api.Models.Command;
 using NoCreamCheesePls.Api.Models.CommandResults;
 using NoCreamCheesePls.Api.Models.QueryResults;
-using NoCreamCheesePls.Business.Queries.Abstractions;
+using NoCreamCheesePls.Domain.Queries.Abstractions;
 
 namespace NoCreamCheesePls.Controllers.api
 {

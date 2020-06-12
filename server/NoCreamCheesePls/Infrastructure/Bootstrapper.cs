@@ -2,7 +2,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 
-namespace NoCreamCheesePls.Bootloader
+namespace NoCreamCheesePls.Infrastructure
 {
   public class Bootstrapper
   {

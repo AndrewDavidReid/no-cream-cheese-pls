@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using NoCreamCheesePls.Api.Models.QueryResults;
-using NoCreamCheesePls.Business.Queries.Abstractions;
 using NoCreamCheesePls.Data.Repositories.Abstractions;
+using NoCreamCheesePls.Domain.Queries.Abstractions;
 
-namespace NoCreamCheesePls.Business.Queries
+namespace NoCreamCheesePls.Domain.Queries
 {
   public class ShoppingListQueries : IShoppingListQueries
   {

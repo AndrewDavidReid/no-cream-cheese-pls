@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using NoCreamCheesePls.Api.Models.Command;
 
-namespace NoCreamCheesePls.Business.Validators
+namespace NoCreamCheesePls.Domain.Validators
 {
   public class CreateShoppingListItemValidator : AbstractValidator<CreateShoppingListItem>
   {

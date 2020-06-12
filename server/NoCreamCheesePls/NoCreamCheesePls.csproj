@@ -3,17 +3,22 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="Domain" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="FluentValidation" Version="8.6.2" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
     <PackageReference Include="MediatR" Version="4.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="4.1.0" />
+    <PackageReference Include="Npgsql" Version="4.1.3.1" />
+    <PackageReference Include="StructureMap" Version="4.7.1" />
+    <PackageReference Include="StructureMap.Microsoft.DependencyInjection" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NoCreamCheesePls.Bootloader\NoCreamCheesePls.Bootloader.csproj" />
-    <ProjectReference Include="..\NoCreamCheesePls.Data\NoCreamCheesePls.Data.csproj" />
+    <ProjectReference Include="..\NoCreamCheesePls.Api.Models\NoCreamCheesePls.Api.Models.csproj" />
   </ItemGroup>
 </Project>

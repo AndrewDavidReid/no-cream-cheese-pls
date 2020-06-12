@@ -1,7 +1,7 @@
-using NoCreamCheesePls.Business.Queries;
+using NoCreamCheesePls.Domain.Queries;
 using StructureMap;
 
-namespace NoCreamCheesePls.Bootloader.Registries
+namespace NoCreamCheesePls.Infrastructure.Registries
 {
   public class BusinessRegistry : Registry
   {

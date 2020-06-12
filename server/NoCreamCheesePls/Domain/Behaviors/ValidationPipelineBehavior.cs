@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
-using NoCreamCheesePls.Business.Exceptions;
+using NoCreamCheesePls.Domain.Exceptions;
 
-namespace NoCreamCheesePls.Business.Behaviors
+namespace NoCreamCheesePls.Domain.Behaviors
 {
   public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
   {
