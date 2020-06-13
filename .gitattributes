@@ -1,0 +1,4 @@
+# Ensure shell script uses LF - https://github.com/dhoer/docker-on-windows-gotchas
+Dockerfile  eol=lf
+Dockerfile.*  eol=lf
+*.sh        eol=lf
