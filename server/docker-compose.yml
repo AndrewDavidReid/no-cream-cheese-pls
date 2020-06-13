@@ -1,15 +1,35 @@
-version: '3.4'
+version: "3.4"
 
 services:
-  web:
-    image: no-cream-cheese-pls
-    build:
-      context: .
-      dockerfile: NoCreamCheesePls/Dockerfile
-  migrations:
-    image: no-cream-cheese-pls-migrations
-    build:
-     context: .
-     args:
-       - MIGRATIONS_PROJECT=NoCreamCheesePls.Data.Migrations
-     dockerfile: NoCreamCheesePls.Data.Migrations/Dockerfile
+  db:
+    image: postgres
+    container_name: "nccp_postgres"
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - nccp-postgres-data:/var/lib/postgres/data
+      - ./postgres/init-local-databases.sh:/docker-entrypoint-initdb.d/init-local-databases.sh
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+    ports:
+      - "5432:5432"
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/etc/postgresql/postgresql.conf"
+
+  seq:
+    image: datalust/seq
+    container_name: "nccp_seq"
+    restart: always
+    environment:
+      - "ACCEPT_EULA=Y"
+    ports:
+      - "5341:80"
+    volumes:
+      - nccp-seq-data:/data
+
+volumes:
+  nccp-postgres-data:
+  nccp-seq-data:
