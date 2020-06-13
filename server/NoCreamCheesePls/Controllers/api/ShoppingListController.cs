@@ -17,25 +17,25 @@ namespace NoCreamCheesePls.Controllers.api
     public ShoppingListController(IMediator mediatorP,
                                   IShoppingListQueries shoppingListQueries)
     {
-      m_Mediator = mediatorP;
-      m_ShoppingListQueries = shoppingListQueries;
+      _mMediator = mediatorP;
+      _mShoppingListQueries = shoppingListQueries;
     }
 
-    private readonly IMediator m_Mediator;
-    private readonly IShoppingListQueries m_ShoppingListQueries;
+    private readonly IMediator _mMediator;
+    private readonly IShoppingListQueries _mShoppingListQueries;
 
     [HttpGet]
     [Route("all")]
     public async Task<ActionResult<IEnumerable<ShoppingListQueryResult>>> GetAll()
     {
-      return Ok(await m_ShoppingListQueries.GetAllShoppingListsAsync());
+      return Ok(await _mShoppingListQueries.GetAllShoppingListsAsync());
     }
 
     [HttpGet]
     [Route("{id}/with-items")]
     public async Task<ActionResult<ShoppingListWithItemsQueryResult>> GetWithItems(Guid id)
     {
-      var shopping_list = await m_ShoppingListQueries.GetShoppingListWithItemsAsync(id);
+      var shopping_list = await _mShoppingListQueries.GetShoppingListWithItemsAsync(id);
 
       if (shopping_list != null)
       {
@@ -49,21 +49,21 @@ namespace NoCreamCheesePls.Controllers.api
     [Route("create")]
     public async Task<ActionResult<CreateShoppingListResult>> Create()
     {
-      return await m_Mediator.Send(new CreateShoppingList());
+      return await _mMediator.Send(new CreateShoppingList());
     }
 
     [HttpPost]
     [Route("create-item")]
     public async Task<ActionResult<CreateShoppingListItemResult>> CreateItem(CreateShoppingListItem command)
     {
-      return await m_Mediator.Send(command);
+      return await _mMediator.Send(command);
     }
 
     [HttpPut]
     [Route("update-item")]
     public async Task<ActionResult> UpdateItem(UpdateShoppingListItem command)
     {
-      await m_Mediator.Send(command);
+      await _mMediator.Send(command);
 
       return Ok();
     }

@@ -5,14 +5,22 @@ using Dapper;
 using NoCreamCheesePls.Data.Models;
 using NoCreamCheesePls.Data.ReadModels;
 using NoCreamCheesePls.Data.Repositories.Abstractions;
+using NoCreamCheesePls.Infrastructure.Connection;
 
 namespace NoCreamCheesePls.Data.Repositories
 {
   public class ShoppingListSqlRepository : IShoppingListRepository
   {
+    public ShoppingListSqlRepository(IDbConnectionFactory dbConnectionFactory)
+    {
+      _dbConnectionFactory = dbConnectionFactory;
+    }
+
+    private readonly IDbConnectionFactory _dbConnectionFactory;
+
     public async Task<int> CreateShoppingListAsync(ShoppingList shoppingListP)
     {
-      using (var connection = DbConnectionFactory.GetInstance())
+      using (var connection = _dbConnectionFactory.GetConnectionInstance())
       {
         var sql = @"INSERT INTO shopping_list
                      (id, created_on)
@@ -25,7 +33,7 @@ namespace NoCreamCheesePls.Data.Repositories
 
     public async Task<int> CreateShoppingListItemAsync(ShoppingListItem item)
     {
-      using (var connection = DbConnectionFactory.GetInstance())
+      using (var connection = _dbConnectionFactory.GetConnectionInstance())
       {
         var sql = @"INSERT INTO shopping_list_item
                      (id, shopping_list_id, text, completed, created_on, last_updated_on)
@@ -38,7 +46,7 @@ namespace NoCreamCheesePls.Data.Repositories
 
     public async Task<ShoppingList> GetByIdAsync(Guid id)
     {
-      using (var connection = DbConnectionFactory.GetInstance())
+      using (var connection = _dbConnectionFactory.GetConnectionInstance())
       {
         var sql = "SELECT * FROM shopping_list WHERE id=@Id";
 
@@ -48,7 +56,7 @@ namespace NoCreamCheesePls.Data.Repositories
 
     public async Task<ShoppingListItem> GetItemByIdAndListIdAsync(Guid itemId, Guid listId)
     {
-      using (var connection = DbConnectionFactory.GetInstance())
+      using (var connection = _dbConnectionFactory.GetConnectionInstance())
       {
         var sql = @"SELECT *
                     FROM shopping_list_item
@@ -61,7 +69,7 @@ namespace NoCreamCheesePls.Data.Repositories
 
     public async Task<IEnumerable<ShoppingList>> GetAllShoppingListsAsync()
     {
-      using (var connection = DbConnectionFactory.GetInstance())
+      using (var connection = _dbConnectionFactory.GetConnectionInstance())
       {
         var sql = @"SELECT *
                     FROM shopping_list";
@@ -72,7 +80,7 @@ namespace NoCreamCheesePls.Data.Repositories
 
     public async Task<int> UpdateShoppingListItemAsync(ShoppingListItem item)
     {
-      using (var connection = DbConnectionFactory.GetInstance())
+      using (var connection = _dbConnectionFactory.GetConnectionInstance())
       {
         var sql = @"UPDATE shopping_list_item
                     SET text = @Text, completed = @Completed, last_updated_on = @LastUpdatedOn
@@ -87,19 +95,19 @@ namespace NoCreamCheesePls.Data.Repositories
       var sql = @"SELECT * FROM shopping_list WHERE id=@ShoppingListId;
                   SELECT * FROM shopping_list_item WHERE shopping_list_id=@ShoppingListId";
 
-      using (var connection = DbConnectionFactory.GetInstance())
+      using (var connection = _dbConnectionFactory.GetConnectionInstance())
       using (var grid = connection.QueryMultiple(sql, new { ShoppingListId = shoppingListId}))
       {
-        var shopping_list = await grid.ReadFirstOrDefaultAsync<ShoppingListWithItems>();
+        var shoppingList = await grid.ReadFirstOrDefaultAsync<ShoppingListWithItems>();
 
-        if (shopping_list == null)
+        if (shoppingList == null)
         {
           return null;
         }
 
-        shopping_list.Items = await grid.ReadAsync<ShoppingListItem>();
+        shoppingList.Items = await grid.ReadAsync<ShoppingListItem>();
 
-        return shopping_list;
+        return shoppingList;
       }
     }
   }

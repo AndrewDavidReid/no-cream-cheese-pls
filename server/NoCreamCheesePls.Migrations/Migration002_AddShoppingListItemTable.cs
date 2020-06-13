@@ -3,7 +3,7 @@ using FluentMigrator;
 namespace NoCreamCheesePls.Data.Migrations
 {
   [Migration(2)]
-  public class Migration002_AddShoppingListItemTable : Migration
+  public class Migration002AddShoppingListItemTable : Migration
   {
     public override void Up()
     {

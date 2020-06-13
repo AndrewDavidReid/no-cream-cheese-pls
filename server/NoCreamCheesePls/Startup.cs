@@ -1,46 +1,62 @@
-using System;
 using System.IO;
 using AutoMapper;
+using Dapper;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Hosting;
+using NoCreamCheesePls.Data.Repositories;
+using NoCreamCheesePls.Data.Repositories.Abstractions;
 using NoCreamCheesePls.Domain.CommandHandlers;
-using NoCreamCheesePls.Infrastructure;
+using NoCreamCheesePls.Domain.Queries;
+using NoCreamCheesePls.Domain.Queries.Abstractions;
+using NoCreamCheesePls.Domain.Validators;
+using NoCreamCheesePls.Infrastructure.Config;
+using NoCreamCheesePls.Infrastructure.Connection;
 using NoCreamCheesePls.Infrastructure.Filters;
+using NoCreamCheesePls.Infrastructure.Mappings;
 
 namespace NoCreamCheesePls
 {
   public class Startup
   {
-    public Startup(IConfiguration configuration,
-                   IHostingEnvironment hostingEnvironment)
+    public Startup(IConfiguration configuration)
     {
-      m_Configuration = configuration;
-      m_HostingEnvironment= hostingEnvironment;
+      _configuration = configuration;
     }
 
-    private readonly IConfiguration m_Configuration;
-    private readonly IHostingEnvironment m_HostingEnvironment;
+    private readonly IConfiguration _configuration;
 
-    public IServiceProvider ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
       ConfigureDatabase();
-      ConfigureMvc(services);
 
+      services
+        .AddControllers(x =>
+          x.Filters.Add<ApiExceptionFilter>());
+
+      // Config
+      services.AddTransient<IAppConfig, AppConfig>();
+      services.AddTransient<IDbConnectionFactory, DbConnectionFactory>();
+      // Repositories
+      services.AddTransient<IShoppingListRepository, ShoppingListSqlRepository>();
+      // Queries
+      services.AddTransient<IShoppingListQueries, ShoppingListQueries>();
+
+      services.AddValidatorsFromAssemblyContaining(typeof(CreateShoppingListItemValidator));
       // Thanks Jimmy
-      services.AddAutoMapper();
+      services.AddAutoMapper(typeof(QueryMappingProfile));
       services.AddMediatR(typeof(CreateShoppingListHandler));
-
-      return Bootstrapper.ConfigureDependencyInjection(services);
     }
 
-    public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment webHostEnvironment)
     {
-      if (m_HostingEnvironment.IsDevelopment())
+      app.UseStaticFiles();
+
+      if (webHostEnvironment.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();
       }
@@ -57,33 +73,17 @@ namespace NoCreamCheesePls
         }
       });
 
-      app.UseMvcWithDefaultRoute();
-      app.UseDefaultFiles();
-      app.UseStaticFiles();
-
+      app.UseRouting();
+      // Authentication/authorization would go here
+      app.UseEndpoints(x =>
+      {
+        x.MapDefaultControllerRoute();
+      });
     }
-
 
     private void ConfigureDatabase()
     {
-      Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-    }
-
-    private void ConfigureMvc(IServiceCollection servicesP)
-    {
-      var mvc_configuration = servicesP.AddMvc(x =>
-      {
-        x.Filters.Add(new ApiExceptionFilter());
-      }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-      mvc_configuration.AddJsonOptions(options =>
-      {
-        options.SerializerSettings.Formatting = Formatting.Indented;
-        // Camel cases the json properties the same way as the poco
-        options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-        options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-        options.SerializerSettings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
-      });
+      DefaultTypeMap.MatchNamesWithUnderscores = true;
     }
   }
 }

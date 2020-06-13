@@ -13,10 +13,10 @@ namespace NoCreamCheesePls.Domain.CommandHandlers
   {
     public CreateShoppingListHandler(IShoppingListRepository shoppingListRepositoryP)
     {
-      m_ShoppingListRepository = shoppingListRepositoryP;
+      _ShoppingListRepository = shoppingListRepositoryP;
     }
 
-    private readonly IShoppingListRepository m_ShoppingListRepository;
+    private readonly IShoppingListRepository _ShoppingListRepository;
 
     public async Task<CreateShoppingListResult> Handle(CreateShoppingList request, CancellationToken cancellationToken)
     {
@@ -26,7 +26,7 @@ namespace NoCreamCheesePls.Domain.CommandHandlers
         CreatedOn = DateTime.UtcNow
       };
 
-      var rows_affected = await m_ShoppingListRepository.CreateShoppingListAsync(shopping_list);
+      var rows_affected = await _ShoppingListRepository.CreateShoppingListAsync(shopping_list);
 
       return new CreateShoppingListResult
       {

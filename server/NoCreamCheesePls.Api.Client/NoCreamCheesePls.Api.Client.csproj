@@ -4,7 +4,7 @@
     <RootNamespace>NoCreamCheesePls.Api.Client</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Refit" Version="4.5.6" />
+    <PackageReference Include="Refit" Version="5.1.67" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoCreamCheesePls.Api.Models\NoCreamCheesePls.Api.Models.csproj" />
