@@ -1,8 +1,9 @@
 using System.Threading.Tasks;
+using FluentAssertions;
 using NoCreamCheesePls.Api.Client;
-using NoCreamCheesePls.Data;
 using NoCreamCheesePls.Data.Repositories;
 using NoCreamCheesePls.Data.Repositories.Abstractions;
+using NoCreamCheesePls.Infrastructure.Connection;
 using Npgsql;
 using Respawn;
 using Xunit;
@@ -14,13 +15,19 @@ namespace NoCreamCheesePls.IntegrationTests.Tests
   {
     protected IntegrationTestingBase(ApiFixture apiFixture)
     {
+      _apiFixture = apiFixture;
       ApiClient = apiFixture.ApiClient;
     }
 
-    protected ApiClient ApiClient { get; }
+    protected readonly ApiClient ApiClient;
+
+    private readonly ApiFixture _apiFixture;
+    private DbConnectionFactory _dbConnectionFactory => _apiFixture.Server.Services.GetService(typeof(IDbConnectionFactory)).As<DbConnectionFactory>();
+
+
     protected TestObjects TestObjects { get; } = new TestObjects();
 
-    private IShoppingListRepository ShoppingListRepository => new ShoppingListSqlRepository();
+    private IShoppingListRepository ShoppingListRepository => new ShoppingListSqlRepository(_dbConnectionFactory);
 
     // Called Before Each test
     public virtual async Task InitializeAsync()
@@ -59,7 +66,7 @@ namespace NoCreamCheesePls.IntegrationTests.Tests
         DbAdapter = DbAdapter.Postgres
       };
 
-      using (var conn = new NpgsqlConnection(DbConnectionFactory.GetDefaultConnectionString))
+      using (var conn = _dbConnectionFactory.GetConnectionInstance())
       {
         await conn.OpenAsync();
 

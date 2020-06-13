@@ -12,14 +12,14 @@ namespace NoCreamCheesePls.Domain.CommandHandlers
     {
       public UpdateShoppingListItemHandler(IShoppingListRepository shoppingListRepository)
       {
-        m_ShoppingListRepository = shoppingListRepository;
+        _ShoppingListRepository = shoppingListRepository;
       }
 
-      private readonly IShoppingListRepository m_ShoppingListRepository;
+      private readonly IShoppingListRepository _ShoppingListRepository;
 
-      public async Task Handle(UpdateShoppingListItem request, CancellationToken cancellationToken)
+      public async Task<Unit> Handle(UpdateShoppingListItem request, CancellationToken cancellationToken)
       {
-        var shopping_list_item = await m_ShoppingListRepository.GetItemByIdAndListIdAsync(request.Id, request.ShoppingListId);
+        var shopping_list_item = await _ShoppingListRepository.GetItemByIdAndListIdAsync(request.Id, request.ShoppingListId);
 
         if (shopping_list_item == null)
         {
@@ -31,7 +31,9 @@ namespace NoCreamCheesePls.Domain.CommandHandlers
         updated_list_item.LastUpdatedOn = DateTime.UtcNow;
         updated_list_item.Completed = request.Completed;
 
-        await m_ShoppingListRepository.UpdateShoppingListItemAsync(updated_list_item);
+        await _ShoppingListRepository.UpdateShoppingListItemAsync(updated_list_item);
+
+        return Unit.Value;
       }
     }
 }

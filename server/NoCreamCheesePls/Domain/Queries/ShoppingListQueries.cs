@@ -10,25 +10,27 @@ namespace NoCreamCheesePls.Domain.Queries
 {
   public class ShoppingListQueries : IShoppingListQueries
   {
-    public ShoppingListQueries(IShoppingListRepository shoppingListRepositoryP)
+    public ShoppingListQueries(IShoppingListRepository shoppingListRepositoryP, IMapper mapper)
     {
-      m_ShoppingListRepository = shoppingListRepositoryP;
+      _ShoppingListRepository = shoppingListRepositoryP;
+      _mapper = mapper;
     }
 
-    private readonly IShoppingListRepository m_ShoppingListRepository;
+    private readonly IShoppingListRepository _ShoppingListRepository;
+    private readonly IMapper _mapper;
 
     public async Task<IEnumerable<ShoppingListQueryResult>> GetAllShoppingListsAsync()
     {
-      var results = await m_ShoppingListRepository.GetAllShoppingListsAsync();
+      var results = await _ShoppingListRepository.GetAllShoppingListsAsync();
 
-      return Mapper.Map<IEnumerable<ShoppingListQueryResult>>(results);
+      return _mapper.Map<IEnumerable<ShoppingListQueryResult>>(results);
     }
 
     public async Task<ShoppingListWithItemsQueryResult> GetShoppingListWithItemsAsync(Guid id)
     {
-      var results = await m_ShoppingListRepository.GetShoppingListWithItemsAsync(id);
+      var results = await _ShoppingListRepository.GetShoppingListWithItemsAsync(id);
 
-      return Mapper.Map<ShoppingListWithItemsQueryResult>(results);
+      return _mapper.Map<ShoppingListWithItemsQueryResult>(results);
     }
   }
 }
