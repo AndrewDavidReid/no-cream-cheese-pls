@@ -8,9 +8,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2462AD50-D758-4276-8277-34E76D8F401C}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		docker-compose.yml = docker-compose.yml
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoCreamCheesePls.Migrations", "NoCreamCheesePls.Migrations\NoCreamCheesePls.Migrations.csproj", "{A7634FE9-F3A7-4194-939E-5D8C1ECDC492}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoCreamCheesePls.Api.Models", "NoCreamCheesePls.Api.Models\NoCreamCheesePls.Api.Models.csproj", "{660445AD-27AE-49B5-9BC6-44845B61D56B}"
 EndProject
@@ -28,10 +27,6 @@ Global
 		{E620657E-2093-444D-99AD-D5781CA0944D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E620657E-2093-444D-99AD-D5781CA0944D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E620657E-2093-444D-99AD-D5781CA0944D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7634FE9-F3A7-4194-939E-5D8C1ECDC492}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7634FE9-F3A7-4194-939E-5D8C1ECDC492}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7634FE9-F3A7-4194-939E-5D8C1ECDC492}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7634FE9-F3A7-4194-939E-5D8C1ECDC492}.Release|Any CPU.Build.0 = Release|Any CPU
 		{660445AD-27AE-49B5-9BC6-44845B61D56B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{660445AD-27AE-49B5-9BC6-44845B61D56B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{660445AD-27AE-49B5-9BC6-44845B61D56B}.Release|Any CPU.ActiveCfg = Release|Any CPU

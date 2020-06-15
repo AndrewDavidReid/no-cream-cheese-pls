@@ -4,31 +4,32 @@ using System.Threading.Tasks;
 using MediatR;
 using NoCreamCheesePls.Api.Models.Command;
 using NoCreamCheesePls.Api.Models.CommandResults;
-using NoCreamCheesePls.Data.Models;
-using NoCreamCheesePls.Data.Repositories.Abstractions;
+using NoCreamCheesePls.Api.Models.DataModels;
+using NoCreamCheesePls.Data.UnitOfWork.Abstractions;
 using NoCreamCheesePls.Domain.Exceptions;
 
 namespace NoCreamCheesePls.Domain.CommandHandlers
 {
   public class CreateShoppingListItemHandler : IRequestHandler<CreateShoppingListItem, CreateShoppingListItemResult>
   {
-    public CreateShoppingListItemHandler(IShoppingListRepository shoppingListRepository)
+    public CreateShoppingListItemHandler(IDataStore dataStore)
     {
-      _ShoppingListRepository = shoppingListRepository;
+      _dataStore = dataStore;
     }
 
-    private readonly IShoppingListRepository _ShoppingListRepository;
+    private readonly IDataStore _dataStore;
+
 
     public async Task<CreateShoppingListItemResult> Handle(CreateShoppingListItem request, CancellationToken cancellationToken)
     {
-      var item = await _ShoppingListRepository.GetByIdAsync(request.ShoppingListId);
+      var shoppingList = await _dataStore.ShoppingList.GetByIdAsync(request.ShoppingListId);
 
-      if (item == null)
+      if (shoppingList == null)
       {
         throw new BadRequestException($"No Shopping List found with ID {request.ShoppingListId}");
       }
 
-      var shopping_list_item = new ShoppingListItem
+      var shoppingListItem = new ShoppingListItem
       {
         Id = Guid.NewGuid(),
         ShoppingListId = request.ShoppingListId,
@@ -38,11 +39,14 @@ namespace NoCreamCheesePls.Domain.CommandHandlers
         LastUpdatedOn = DateTime.UtcNow
       };
 
-      var result = await _ShoppingListRepository.CreateShoppingListItemAsync(shopping_list_item);
+      shoppingList.AddItem(shoppingListItem);
+      _dataStore.ShoppingList.Store(shoppingList);
+
+      await _dataStore.CommitChangesAsync();
 
       return new CreateShoppingListItemResult
       {
-        CreatedItemId = shopping_list_item.Id
+        CreatedItemId = shoppingListItem.Id
       };
     }
   }

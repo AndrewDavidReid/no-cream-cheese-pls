@@ -20,8 +20,7 @@ namespace NoCreamCheesePls.IntegrationTests.Tests.ShoppingList
     [Fact]
     public async Task WhenCalled_WithValidRequest_ReturnsWithCreatedItemGuid()
     {
-      await AddShoppingList();
-      await AddShoppingListItem();
+      await AddShoppingListWithItem();
 
       // If this doesn't throw, we're good.
       await ApiClient.ShoppingList.UpdateItemAsync(TestObjects.ValidUpdateShoppingListItem);

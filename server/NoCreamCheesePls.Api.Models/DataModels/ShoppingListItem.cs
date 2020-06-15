@@ -1,6 +1,6 @@
 using System;
 
-namespace NoCreamCheesePls.Data.Models
+namespace NoCreamCheesePls.Api.Models.DataModels
 {
   public class ShoppingListItem
   {
@@ -10,5 +10,12 @@ namespace NoCreamCheesePls.Data.Models
     public bool Completed { get; set; }
     public DateTime CreatedOn { get; set; }
     public DateTime LastUpdatedOn { get; set; }
+
+    public void Update(string text, bool completed)
+    {
+      Text = text;
+      Completed = completed;
+      LastUpdatedOn = DateTime.UtcNow;
+    }
   }
 }

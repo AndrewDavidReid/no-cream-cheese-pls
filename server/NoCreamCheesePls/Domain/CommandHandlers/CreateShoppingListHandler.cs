@@ -4,33 +4,34 @@ using System.Threading.Tasks;
 using MediatR;
 using NoCreamCheesePls.Api.Models.Command;
 using NoCreamCheesePls.Api.Models.CommandResults;
-using NoCreamCheesePls.Data.Models;
-using NoCreamCheesePls.Data.Repositories.Abstractions;
+using NoCreamCheesePls.Api.Models.DataModels;
+using NoCreamCheesePls.Data.UnitOfWork.Abstractions;
 
 namespace NoCreamCheesePls.Domain.CommandHandlers
 {
   public class CreateShoppingListHandler : IRequestHandler<CreateShoppingList, CreateShoppingListResult>
   {
-    public CreateShoppingListHandler(IShoppingListRepository shoppingListRepositoryP)
+    public CreateShoppingListHandler(IDataStore dataStore)
     {
-      _ShoppingListRepository = shoppingListRepositoryP;
+      _dataStore = dataStore;
     }
 
-    private readonly IShoppingListRepository _ShoppingListRepository;
+    private readonly IDataStore _dataStore;
 
     public async Task<CreateShoppingListResult> Handle(CreateShoppingList request, CancellationToken cancellationToken)
     {
-      var shopping_list = new ShoppingList
+      var shoppingList = new ShoppingList
       {
         Id = Guid.NewGuid(),
         CreatedOn = DateTime.UtcNow
       };
 
-      var rows_affected = await _ShoppingListRepository.CreateShoppingListAsync(shopping_list);
+      _dataStore.ShoppingList.Store(shoppingList);
+      await _dataStore.CommitChangesAsync();
 
       return new CreateShoppingListResult
       {
-        CreatedId = shopping_list.Id
+        CreatedId = shoppingList.Id
       };
     }
   }

@@ -1,6 +1,7 @@
 using System;
+using System.Collections.Generic;
 using NoCreamCheesePls.Api.Models.Command;
-using NoCreamCheesePls.Data.Models;
+using NoCreamCheesePls.Api.Models.DataModels;
 
 namespace NoCreamCheesePls.IntegrationTests
 {
@@ -13,6 +14,16 @@ namespace NoCreamCheesePls.IntegrationTests
     {
       Id = KnownShoppingListId,
       CreatedOn = DateTime.UtcNow
+    };
+
+    public ShoppingList KnownShoppingListWithItem => new ShoppingList
+    {
+      Id = KnownShoppingListId,
+      CreatedOn = DateTime.UtcNow,
+      Items = new List<ShoppingListItem>
+      {
+        KnownShoppingListItem
+      }
     };
 
     public ShoppingListItem KnownShoppingListItem => new ShoppingListItem

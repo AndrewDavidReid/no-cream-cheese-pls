@@ -5,8 +5,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NoCreamCheesePls.Api.Models.Command;
 using NoCreamCheesePls.Api.Models.CommandResults;
-using NoCreamCheesePls.Api.Models.QueryResults;
-using NoCreamCheesePls.Domain.Queries.Abstractions;
+using NoCreamCheesePls.Api.Models.DataModels;
+using NoCreamCheesePls.Data.UnitOfWork.Abstractions;
 
 namespace NoCreamCheesePls.Controllers.api
 {
@@ -14,32 +14,31 @@ namespace NoCreamCheesePls.Controllers.api
   [ApiController]
   public class ShoppingListController : ControllerBase
   {
-    public ShoppingListController(IMediator mediatorP,
-                                  IShoppingListQueries shoppingListQueries)
+    public ShoppingListController(IMediator mediatorP, IDataStore dataStore)
     {
-      _mMediator = mediatorP;
-      _mShoppingListQueries = shoppingListQueries;
+      _mediator = mediatorP;
+      _dataStore = dataStore;
     }
 
-    private readonly IMediator _mMediator;
-    private readonly IShoppingListQueries _mShoppingListQueries;
+    private readonly IMediator _mediator;
+    private readonly IDataStore _dataStore;
 
     [HttpGet]
     [Route("all")]
-    public async Task<ActionResult<IEnumerable<ShoppingListQueryResult>>> GetAll()
+    public async Task<ActionResult<IEnumerable<ShoppingList>>> GetAll()
     {
-      return Ok(await _mShoppingListQueries.GetAllShoppingListsAsync());
+      return Ok(_dataStore.ShoppingList.GetAll());
     }
 
     [HttpGet]
-    [Route("{id}/with-items")]
-    public async Task<ActionResult<ShoppingListWithItemsQueryResult>> GetWithItems(Guid id)
+    [Route("{id}")]
+    public async Task<ActionResult<ShoppingList>> GetById(Guid id)
     {
-      var shopping_list = await _mShoppingListQueries.GetShoppingListWithItemsAsync(id);
+      var shoppingList = await _dataStore.ShoppingList.GetByIdAsync(id);
 
-      if (shopping_list != null)
+      if (shoppingList != null)
       {
-        return shopping_list;
+        return shoppingList;
       }
 
       return NotFound();
@@ -49,21 +48,21 @@ namespace NoCreamCheesePls.Controllers.api
     [Route("create")]
     public async Task<ActionResult<CreateShoppingListResult>> Create()
     {
-      return await _mMediator.Send(new CreateShoppingList());
+      return await _mediator.Send(new CreateShoppingList());
     }
 
     [HttpPost]
     [Route("create-item")]
     public async Task<ActionResult<CreateShoppingListItemResult>> CreateItem(CreateShoppingListItem command)
     {
-      return await _mMediator.Send(command);
+      return await _mediator.Send(command);
     }
 
     [HttpPut]
     [Route("update-item")]
     public async Task<ActionResult> UpdateItem(UpdateShoppingListItem command)
     {
-      await _mMediator.Send(command);
+      await _mediator.Send(command);
 
       return Ok();
     }
