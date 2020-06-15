@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
 using FluentAssertions;
+using Marten;
 using NoCreamCheesePls.Api.Client;
-using NoCreamCheesePls.Data.Repositories;
-using NoCreamCheesePls.Data.Repositories.Abstractions;
-using NoCreamCheesePls.Infrastructure.Connection;
+using NoCreamCheesePls.Data.UnitOfWork;
+using NoCreamCheesePls.Data.UnitOfWork.Abstractions;
+using NoCreamCheesePls.Infrastructure.Config;
 using Npgsql;
 using Respawn;
 using Xunit;
@@ -22,12 +23,12 @@ namespace NoCreamCheesePls.IntegrationTests.Tests
     protected readonly ApiClient ApiClient;
 
     private readonly ApiFixture _apiFixture;
-    private DbConnectionFactory _dbConnectionFactory => _apiFixture.Server.Services.GetService(typeof(IDbConnectionFactory)).As<DbConnectionFactory>();
+    private IDataStore _dataStore => _apiFixture.Server.Services.GetService(typeof(IDataStore)).As<MartenDataStore>();
+    private IAppConfig _appConfig => _apiFixture.Server.Services.GetService(typeof(IAppConfig)).As<AppConfig>();
 
 
     protected TestObjects TestObjects { get; } = new TestObjects();
 
-    private IShoppingListRepository ShoppingListRepository => new ShoppingListSqlRepository(_dbConnectionFactory);
 
     // Called Before Each test
     public virtual async Task InitializeAsync()
@@ -43,12 +44,14 @@ namespace NoCreamCheesePls.IntegrationTests.Tests
 
     protected async Task AddShoppingList()
     {
-      await ShoppingListRepository.CreateShoppingListAsync(TestObjects.KnownShoppingList);
+      _dataStore.ShoppingList.Store(TestObjects.KnownShoppingList);
+      await _dataStore.CommitChangesAsync();
     }
 
-    protected async Task AddShoppingListItem()
+    protected async Task AddShoppingListWithItem()
     {
-      await ShoppingListRepository.CreateShoppingListItemAsync(TestObjects.KnownShoppingListItem);
+      _dataStore.ShoppingList.Store(TestObjects.KnownShoppingListWithItem);
+      await _dataStore.CommitChangesAsync();
     }
 
     private async Task ResetData()
@@ -66,7 +69,7 @@ namespace NoCreamCheesePls.IntegrationTests.Tests
         DbAdapter = DbAdapter.Postgres
       };
 
-      using (var conn = _dbConnectionFactory.GetConnectionInstance())
+      using (var conn = new NpgsqlConnection(_appConfig.DatabaseConnectionString))
       {
         await conn.OpenAsync();
 

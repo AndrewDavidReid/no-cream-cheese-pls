@@ -1,37 +1,37 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using NoCreamCheesePls.Api.Models.Command;
-using NoCreamCheesePls.Data.Repositories.Abstractions;
+using NoCreamCheesePls.Data.UnitOfWork.Abstractions;
 using NoCreamCheesePls.Domain.Exceptions;
 
 namespace NoCreamCheesePls.Domain.CommandHandlers
 {
     public class UpdateShoppingListItemHandler : IRequestHandler<UpdateShoppingListItem>
     {
-      public UpdateShoppingListItemHandler(IShoppingListRepository shoppingListRepository)
+      public UpdateShoppingListItemHandler(IDataStore dataStore)
       {
-        _ShoppingListRepository = shoppingListRepository;
+        _dataStore = dataStore;
       }
 
-      private readonly IShoppingListRepository _ShoppingListRepository;
+      private readonly IDataStore _dataStore;
 
       public async Task<Unit> Handle(UpdateShoppingListItem request, CancellationToken cancellationToken)
       {
-        var shopping_list_item = await _ShoppingListRepository.GetItemByIdAndListIdAsync(request.Id, request.ShoppingListId);
+        var shoppingList = await _dataStore.ShoppingList.GetByIdAsync(request.ShoppingListId);
 
-        if (shopping_list_item == null)
+        if (shoppingList == null)
         {
           throw new BadRequestException($"Failed to find shopping list item with ID: {request.Id} and Shopping List ID: {request.ShoppingListId}");
         }
 
-        var updated_list_item = shopping_list_item;
-        updated_list_item.Text = request.Text;
-        updated_list_item.LastUpdatedOn = DateTime.UtcNow;
-        updated_list_item.Completed = request.Completed;
+        var shoppingListItem = shoppingList.Items.FirstOrDefault(x => x.Id == request.Id) ?? throw new BadRequestException("Invalid ID");
+        shoppingListItem.Update(request.Text, request.Completed);
 
-        await _ShoppingListRepository.UpdateShoppingListItemAsync(updated_list_item);
+        _dataStore.ShoppingList.Store(shoppingList);
+        await _dataStore.CommitChangesAsync();
 
         return Unit.Value;
       }

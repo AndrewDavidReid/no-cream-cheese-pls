@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NoCreamCheesePls.Api.Models.Command;
 using NoCreamCheesePls.Api.Models.CommandResults;
-using NoCreamCheesePls.Api.Models.QueryResults;
+using NoCreamCheesePls.Api.Models.DataModels;
 using Refit;
 
 namespace NoCreamCheesePls.Api.Client.ApiEndpoints
@@ -14,10 +14,11 @@ namespace NoCreamCheesePls.Api.Client.ApiEndpoints
     Task<CreateShoppingListResult> CreateAsync();
 
     [Get("/api/shopping-list/all")]
-    Task<IEnumerable<ShoppingListQueryResult>> GetAllAsync();
+    Task<IEnumerable<ShoppingList>> GetAllAsync();
 
-    [Get("/api/shopping-list/{id}/with-items")]
-    Task<ShoppingListWithItemsQueryResult> GetWithItemsAsync(Guid id);
+    [Get("/api/shopping-list/{id}")]
+    Task<ShoppingList> GetByIdAsync(Guid id);
+
 
     [Post("/api/shopping-list/create-item")]
     Task<CreateShoppingListItemResult> CreateShoppingListItemAsync(CreateShoppingListItem command);
