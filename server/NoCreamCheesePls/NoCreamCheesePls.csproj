@@ -15,6 +15,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Npgsql" Version="4.1.3.1" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.7.0" />
+    <PackageReference Include="NSwag.MSBuild" Version="13.7.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NoCreamCheesePls.Api.Models\NoCreamCheesePls.Api.Models.csproj" />
@@ -26,4 +27,10 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+
+  <Target Name="NSwag" AfterTargets="Build;Rebuild">
+    <Exec EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Core31) aspnetcore2openapi /assembly:$(TargetDir)NoCreamCheesePls.dll /output:../.tmp/swagger.json" />
+    <Exec Command="$(NSwagExe_Core31) openapi2csclient /input:../.tmp/swagger.json /classname:NoCreamCheesePlsClient /namespace:NoCreamCheesePls.NSwagClients /output:../NoCreamCheesePls.NSwagClients/NoCreamCheesePlsClient.Generated.cs" />
+    <Exec Command="$(NSwagExe_Core31) openapi2tsclient /input:../.tmp/swagger.json /output:../.tmp/NoCreamCheesePlsModule.ts" />
+  </Target>
 </Project>
