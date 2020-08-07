@@ -46,6 +46,8 @@ namespace NoCreamCheesePls.Controllers.api
 
     [HttpPost]
     [Route("create")]
+    [ProducesResponseType(typeof(CreateShoppingListResult), 200)]
+    [ProducesResponseType(500)]
     public async Task<ActionResult<CreateShoppingListResult>> Create()
     {
       return await _mediator.Send(new CreateShoppingList());
