@@ -6,4 +6,3 @@ tools
 .idea
 .teamcity/target
 *.iml
-server/.tmp

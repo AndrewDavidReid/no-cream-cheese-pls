@@ -17,10 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoCreamCheesePls.Integratio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoCreamCheesePls.Api.Client", "NoCreamCheesePls.Api.Client\NoCreamCheesePls.Api.Client.csproj", "{4658CD56-7450-482A-B763-020B473B957E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoCreamCheesePls.NSwagClients", "NoCreamCheesePls.NSwagClients\NoCreamCheesePls.NSwagClients.csproj", "{9D91EEAD-6F65-4FFE-AA60-D9047F0D3B2A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0973D7BE-466B-4F1D-88FF-F4C50EE40239}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,18 +39,11 @@ Global
 		{4658CD56-7450-482A-B763-020B473B957E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4658CD56-7450-482A-B763-020B473B957E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4658CD56-7450-482A-B763-020B473B957E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D91EEAD-6F65-4FFE-AA60-D9047F0D3B2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D91EEAD-6F65-4FFE-AA60-D9047F0D3B2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D91EEAD-6F65-4FFE-AA60-D9047F0D3B2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D91EEAD-6F65-4FFE-AA60-D9047F0D3B2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A89FA59A-5062-40D1-A6E1-C043E1DDA657}
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{B365E69D-4572-480A-93C5-18703F910E17} = {0973D7BE-466B-4F1D-88FF-F4C50EE40239}
 	EndGlobalSection
 EndGlobal
