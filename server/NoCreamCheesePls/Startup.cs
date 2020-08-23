@@ -34,11 +34,16 @@ namespace NoCreamCheesePls
       services.AddConfiguredMarten(_appConfig.DatabaseConnectionString);
       services.AddValidatorsFromAssemblyContaining(typeof(CreateShoppingListItemValidator));
       services.AddMediatR(typeof(CreateShoppingListHandler));
+
+      services.AddOpenApiDocument(x => x.Title = "No Cream Cheese Pls - V1");
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment webHostEnvironment)
     {
       app.UseStaticFiles();
+
+      app.UseOpenApi();
+      app.UseSwaggerUi3();
 
       if (webHostEnvironment.IsDevelopment())
       {
