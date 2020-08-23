@@ -11,6 +11,7 @@ using NoCreamCheesePls.Domain.Validators;
 using NoCreamCheesePls.Infrastructure.Config;
 using NoCreamCheesePls.Infrastructure.DataAccess;
 using NoCreamCheesePls.Infrastructure.Filters;
+using NoCreamCheesePls.Middleware;
 
 namespace NoCreamCheesePls
 {
@@ -36,37 +37,52 @@ namespace NoCreamCheesePls
       services.AddMediatR(typeof(CreateShoppingListHandler));
 
       services.AddOpenApiDocument(x => x.Title = "No Cream Cheese Pls - V1");
+
+      services.AddSpaStaticFiles(options =>
+      {
+        options.RootPath = "wwwroot";
+      });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment webHostEnvironment)
     {
-      app.UseStaticFiles();
-
-      app.UseOpenApi();
-      app.UseSwaggerUi3();
-
       if (webHostEnvironment.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();
       }
 
-      app.Use(async (context, next) =>
-      {
-        await next();
+      app.UseHttpsRedirection();
+      app.UseStaticFiles();
 
-        if (context.Response.StatusCode == 404 && !Path.HasExtension(context.Request.Path.Value) &&
-            !context.Request.Path.Value.StartsWith("/api/"))
-        {
-          context.Request.Path = "/index.html";
-          await next();
-        }
+      // Generate import-map.json file dynamically.
+      app.Map("/assets/import-map.json", x =>
+      {
+        x.UseMiddleware<ImportMapMiddleware>();
       });
+
+      app.UseOpenApi();
+      app.UseSwaggerUi3();
+
+      // When not in development mode, use SpaStaticFiles
+      if (!webHostEnvironment.IsDevelopment())
+      {
+        app.UseSpaStaticFiles();
+      }
 
       app.UseRouting();
       // Authentication/authorization would go here
       app.UseEndpoints(x =>
       {
         x.MapDefaultControllerRoute();
+      });
+
+      app.UseSpa(options =>
+      {
+        // Proxy all spa requests to localhost:4200 when developing locally.
+        if (webHostEnvironment.IsDevelopment())
+        {
+          options.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+        }
       });
     }
   }
