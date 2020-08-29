@@ -43,10 +43,6 @@ object Build : BuildType({
 
     steps {
         script {
-
-            conditions {
-                equals("teamcity.build.branch", "dev")
-            }
             scriptContent = """echo "HI""""
         }
     }
