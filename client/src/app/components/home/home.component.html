@@ -1,10 +1,12 @@
 <!--My Lists-->
 <mat-nav-list>
-  <ng-container *ngIf="ShoppingLists?.length > 0; then hasLists; else doesNotHaveLists"></ng-container>
+  <ng-container
+    *ngIf="ShoppingLists?.length > 0; then hasLists; else doesNotHaveLists"
+  ></ng-container>
 
   <ng-template #hasLists>
     <a mat-list-item *ngFor="let shoppingList of ShoppingLists">
-      <span>{{shoppingList.CreatedOn}}</span>
+      <span>{{ shoppingList.CreatedOn }}</span>
       <mat-icon class="link-icon">chevron_right</mat-icon>
     </a>
   </ng-template>
@@ -14,7 +16,6 @@
       <span class="no-lists-message">You do not have any lists</span>
     </mat-list-item>
   </ng-template>
-
 </mat-nav-list>
 
 <!--Add a new list-->
