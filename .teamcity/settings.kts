@@ -1,4 +1,5 @@
 import jetbrains.buildServer.configs.kotlin.v2019_2.*
+import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.commitStatusPublisher
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
 
@@ -48,6 +49,16 @@ object Build : BuildType({
 
     triggers {
         vcs {
+        }
+    }
+
+    features {
+        commitStatusPublisher {
+            vcsRootExtId = "${DslContext.settingsRoot.id}"
+            publisher = gitlab {
+                gitlabApiUrl = "https://gitlab.com/api/v4"
+                accessToken = "credentialsJSON:a0ad04b0-e6db-401a-b833-a4dd3e232878"
+            }
         }
     }
 })
